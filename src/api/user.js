@@ -31,3 +31,11 @@ export function loginCopy(data) {
     data
   })
 }
+
+export function tt(data) { //测试权限动态添加路由
+  return request({
+    url: '/tt',
+    method: 'post',
+    data
+  })
+}

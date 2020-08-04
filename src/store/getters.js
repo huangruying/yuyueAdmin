@@ -9,6 +9,7 @@ const getters = {
   name: state => state.user.name,
   introduction: state => state.user.introduction,
   roles: state => state.user.roles,
+  menus: state => state.user.menus, // 测试动态添加路由数据
   permission_routes: state => state.permission.routes,
   errorLogs: state => state.errorLog.logs
 }

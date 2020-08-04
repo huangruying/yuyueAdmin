@@ -12,7 +12,7 @@
         :collapse-transition="false"
         mode="vertical"
       >
-        <sidebar-item v-for="route in permission_routes" :key="route.path" :item="route" :base-path="route.path" />
+        <sidebar-item v-for="route in routes" :key="route.path" :item="route" :base-path="route.path" />
       </el-menu>
     </el-scrollbar>
   </div>
@@ -31,6 +31,12 @@ export default {
       'permission_routes',
       'sidebar'
     ]),
+    routes(){
+      // permission_routes  // 原本只需渲染这个
+      //  var routerList = this.$store.getters.menus // 后台返回的路由
+      //  return this.$store.getters.permission_routes.concat(routerList) // 连接
+       return this.$store.getters.permission_routes // 可直接渲染 permission_routes
+    },
     activeMenu() {
       const route = this.$route
       const { meta, path } = route
@@ -49,6 +55,8 @@ export default {
     isCollapse() {
       return !this.sidebar.opened
     }
+  },
+  mounted(){
   }
 }
 </script>

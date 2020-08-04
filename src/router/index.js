@@ -76,7 +76,6 @@ export const asyncRoutes = [
   {
     path: '/autoWash',
     component: Layout,
-    // redirect: '/autoWash/indent',
     meta: { title: '车后服务管理后台', icon: 'example' , roles: ['vsadm'] },
     children: [
       {
@@ -216,7 +215,6 @@ export const asyncRoutes = [
   {
     path: '/service',
     component: Layout,
-    // redirect: '/autoWash/indent',
     meta: { title: '贵宾厅管理后台', icon: 'example' , roles:  ['vipadm'] },
     children: [
       {

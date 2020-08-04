@@ -61,7 +61,8 @@ service.interceptors.response.use(
           })
         })
       }
-      return Promise.reject('error')
+      // return Promise.reject('error')  // 记得改回这里
+      return response.data
     } else {
       return response.data
     }

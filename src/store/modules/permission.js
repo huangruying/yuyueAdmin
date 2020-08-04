@@ -43,6 +43,8 @@ const mutations = {
   SET_ROUTES: (state, routes) => {
     state.addRoutes = routes
     state.routes = constantRoutes.concat(routes)
+    // state.routers = constantRouterMap.concat(router) // 保存所有路由列表
+    // state.routes = router // 保存后端传来的路由列表
   }
 }
 

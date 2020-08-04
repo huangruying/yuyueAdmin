@@ -161,15 +161,15 @@ export default {
       rolesListCon: [
         {
           name: "洗车服务后台",
-          value: "carWash"
+          value: "vsadm"
         },
         {
           name: "贵宾厅后台",
-          value: "service"
+          value: "vipadm"
         },
         {
           name: "用户权限管理",
-          value: "userList"
+          value: "permissionadm"
         }
       ],
       rules: {
