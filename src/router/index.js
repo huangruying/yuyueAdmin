@@ -134,7 +134,7 @@ export const asyncRoutes = [
               path: 'nodeService',
               name: 'nodeService',
               component: () => import('@/views/nodeService/index'),
-              meta: { title: '网点服务项管理', icon: 'table' , roles: ['vsadm_basedata']}
+              meta: { title: '网点服务项管理', icon: 'table' , roles: ['vsadm_servicer_list']}
             },
         ]
       },
@@ -162,7 +162,7 @@ export const asyncRoutes = [
             path: 'volumeList',
             name: 'volumeList',
             component: () => import('@/views/volumeList/index'),
-            meta: { title: '劵码列表', icon: 'table' }
+            meta: { title: '劵码列表', icon: 'table' , roles: ['vsadm_code_list']}
           }
         ]
       },
@@ -175,13 +175,13 @@ export const asyncRoutes = [
             path: 'channelPrice', 
             name: 'channelPrice',
             component: () => import('@/views/channelPrice/index'),
-            meta: { title: '渠道价格', icon: 'table' }
+            meta: { title: '渠道价格', icon: 'table' , roles: ['vsadm_channel_price']}
           },
           {
             path: 'platformPrice', 
             name: 'platformPrice',
             component: () => import('@/views/platformPrice/index'),
-            meta: { title: '平台价格', icon: 'table' }
+            meta: { title: '平台价格', icon: 'table' , roles: ['vsadm_servicer_price']}
           }
         ]
       },
@@ -200,13 +200,13 @@ export const asyncRoutes = [
             path: 'nodeReconciliation',
             name: 'nodeReconciliation',
             component: () => import('@/views/nodeReconciliation/index'),
-            meta: { title: '网点对账', icon: 'table' }
+            meta: { title: '网点对账', icon: 'table' , roles: ['vsadm_servicer_account']}
           },
           {
             path: 'insuranceReconciliation',
             name: 'insuranceReconciliation',
             component: () => import('@/views/insuranceReconciliation/index'),
-            meta: { title: '渠道对账', icon: 'table' }
+            meta: { title: '渠道对账', icon: 'table' , roles: ['vsadm_chennel_account']}
           }
         ]
       },
@@ -406,6 +406,20 @@ export const asyncRoutes = [
         component: () => import('@/views/userWxList/index'),
         meta: { title: '微信用户列表'}
       },
+    ]
+  },
+  {
+    path: '/authority',
+    component: Layout,
+    alwaysShow: true,
+    meta: { title: '权限管理', icon: 'example' , roles:  ['permissionadm'] },
+    children: [
+      {
+        path: '/authorityList',
+        name: 'authorityList',
+        component: () => import('@/views/authorityList/index'),
+        meta: { title: '角色管理'}
+      }
     ]
   },
   // 404 page must be placed at the end !!!

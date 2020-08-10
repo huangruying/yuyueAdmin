@@ -17,8 +17,8 @@ service.interceptors.request.use(
       // let each request carry token
       // ['X-Token'] is a custom headers key
       // please modify it according to the actual situation
-      config.headers['X-Token'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
-    }
+      config.headers['Authorization'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+    } 
     return config
   },
   error => {
@@ -61,8 +61,8 @@ service.interceptors.response.use(
           })
         })
       }
-      // return Promise.reject('error')  // 记得改回这里
-      return response.data
+      return Promise.reject('error')  // 记得改回这里
+      // return response.data
     } else {
       return response.data
     }

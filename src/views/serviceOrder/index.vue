@@ -5,7 +5,7 @@
        <div class="input_box">
          <el-input
           v-model="queryList.orderno"
-          placeholder="请输入渠道订单号"
+          placeholder="请输入对接订单号"
           class="input fl"
           @keyup.enter.native="handleFilter"/>
           <el-input
@@ -320,7 +320,7 @@ export default {
             }else{
               v.statusCopy = "已退单"
             }
-            if( v.cardInvTime){
+            if(v.cardInvTime){
               v.cardInvTime = formatTime(v.cardInvTime*1000,'yyyy-mm-dd hh:mm:ss')
             }
           })

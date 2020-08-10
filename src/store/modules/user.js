@@ -1,6 +1,7 @@
-import { login, logout, getInfo , tt } from '@/api/user'
+import { login, logout, getInfo , tt , loginCopy } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
+import { Message } from 'element-ui';
 const state = {
   token: getToken(),
   name: '',
@@ -15,7 +16,7 @@ const mutations = {
     state.data = {}
     state.name = ''
     state.avatar = ''
-    state.roles = []
+    // state.roles = []
     removeToken()
     localStorage.removeItem('data')
     // Object.assign(state, getDefaultState())
@@ -47,8 +48,15 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
-        commit('SET_TOKEN', data.username)
-        setToken(data.username)
+        if(!data.roles){
+          Message({
+            message: '检测到你无权限访问该系统，请联系客服！',
+            type: 'warning'
+          });
+          return false
+        }
+        commit('SET_TOKEN', data.Authorization)
+        setToken(data.Authorization)
         var dataList = JSON.stringify(data)
         localStorage.setItem('data',dataList)
         resolve()
@@ -70,12 +78,13 @@ const actions = {
 
       var obj = localStorage.getItem('data')
       var obj = JSON.parse(obj)
+      // console.log(obj);
       var data = {
         roles: obj.roles,
         name: obj.username,
         avatar: obj.pic
       }
-      const { roles, name, avatar , token } = data
+      const { roles, name, avatar , Authorization } = data
       commit('SET_ROLES', roles)
       commit('SET_NAME', name)
       commit('SET_AVATAR', avatar)
@@ -112,16 +121,26 @@ const actions = {
     return new Promise((resolve, reject) => {
       var obj = localStorage.getItem('data')
       var obj = JSON.parse(obj)
-      logout({
-        username: obj.username
-      }).then((res) => {
-        removeToken() // must remove  token  first
-        resetRouter()
-        commit('RESET_STATE')
-        resolve(res)
-      }).catch(error => {
-        reject(error)
-      })
+      removeToken() 
+      resetRouter()
+      commit('SET_TOKEN', '')
+      commit('SET_ROLES', [])
+      commit('RESET_STATE')
+      resolve({code: '200'})
+      // logout({
+      //   username: obj.username
+      // }).then((res) => {
+      //   removeToken() // must remove  token  first
+      //   resetRouter()
+      //   commit('SET_TOKEN', '')
+      //   commit('SET_ROLES', [])
+      //   commit('RESET_STATE')
+      //   resolve(res)
+      // }).catch(error => {
+      //   reject(error)
+      // })
+
+
       // logout(state.token).then(() => {
       //   commit('SET_TOKEN', '')
       //   commit('SET_ROLES', [])

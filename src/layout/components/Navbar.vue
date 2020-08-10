@@ -78,18 +78,23 @@ export default {
       // await this.$store.dispatch('user/logout')
       // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
       var res = await this.$store.dispatch('user/logout')
-      if(res.code == '200'){
-        this.$message({
-          message: '退出登录成功！',
-          type: 'success'
-        })
-        this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-      }else{
-        this.$message({
-          message: '退出失败！',
-          type: 'error'
-        })
-      }
+       this.$message({
+         message: '退出登录成功！',
+         type: 'success'
+       })
+       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      // if(res.code == '200'){
+      //   this.$message({
+      //     message: '退出登录成功！',
+      //     type: 'success'
+      //   })
+      //   this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      // }else{
+      //   this.$message({
+      //     message: '退出失败！',
+      //     type: 'error'
+      //   })
+      // }
     }
   }
 }
