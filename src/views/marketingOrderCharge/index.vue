@@ -89,7 +89,7 @@
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="订单号" width="190" prop="orderCode" align="center">
+      <el-table-column label="兑换券订单号" width="190" prop="orderCode" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.orderCode }}</span>
         </template>
@@ -179,7 +179,7 @@
         <el-divider content-position="left"><span class="title">基本信息</span></el-divider>
         <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;">
           <el-form label-position="right" ref="ruleForm" label-width="150px" :model="itemObj" class="clearFix">
-              <el-form-item label="订单号：" prop="orderCode" style="width: 100%">
+              <el-form-item label="兑换券订单号：" prop="orderCode" style="width: 100%">
                   <el-input v-model="itemObj.orderCode" style="width:50%" disabled></el-input>
               </el-form-item>
               <el-form-item label="第三方平台订单号：" prop="orderId" style="width: 100%">

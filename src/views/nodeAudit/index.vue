@@ -95,11 +95,9 @@
          <div>
            <el-button type="primary" icon="el-icon-search" @click="getData">搜索</el-button>
            <el-button type="primary" @click="reset">重置</el-button>
-           <el-button type="primary" @click="exportData">导出</el-button>
          </div>
          <div>
            <el-button type="primary" icon="el-icon-refresh" @click="resetGetData"></el-button>
-           <el-button type="primary" @click="newly(true)" style="margin-left:15px;">新增</el-button>
          </div>
        </div>
     </div>
@@ -175,8 +173,7 @@
       <el-table-column label="操作" width="230" fixed="right" prop="audit_status" align="center">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="edit(scope.row)">查 看</el-button>
-          <!-- <el-button size="mini" type="primary" @click="pass(scope.row)" v-if="scope.row.status != 1">审 批</el-button> -->
-          <el-button size="mini" type="primary" @click="compile(scope.row)">编 辑</el-button>
+          <el-button size="mini" type="primary" @click="pass(scope.row)" v-if="scope.row.status != 1">审 批</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -220,7 +217,6 @@
         title="选择经纬度"
         :visible.sync="lngLatDialog"
         @opened="lnglatlog"
-        @close="close2"
         append-to-body>
 
         <div class="mymapM">
@@ -296,7 +292,7 @@
               <el-input v-model="itemObj.dotAbbreviation" style="width:210px" :disabled="inputDisabled"></el-input>
             </el-form-item>
             <el-form-item label="网点类型:" prop="dotType" style="width:50%">
-              <el-select v-model="itemObj.dotType" style="width:210px" placeholder="网点类型">
+              <el-select v-model="itemObj.dotType" style="width:210px" placeholder="网点类型" disabled>
                 <el-option
                   v-for="item in nodeTypesList"
                   :label="item.name"
@@ -307,7 +303,7 @@
               <!-- <el-input v-model="itemObj.mechanismName" style="width:210px" :disabled="inputDisabled"></el-input> -->
             </el-form-item>
             <el-form-item label="所属机构:" prop="mechanismId" style="width:50%">
-              <el-select v-model="itemObj.mechanismId" style="width:210px" placeholder="所属机构">
+              <el-select v-model="itemObj.mechanismId" style="width:210px" placeholder="所属机构" disabled>
                 <el-option
                   v-for="item in organizationList"
                   :label="item.mechanismName"
@@ -350,7 +346,7 @@
               <!-- <div>
                 <span class="lnglatText" @click="lngLatDia">{{lnglatText}}</span>
               </div> -->
-              <el-input v-model="itemObj.longitude" style="width:210px;" @click="lngLatDia" placeholder="请点击右侧按钮选择经纬度"></el-input>
+              <el-input v-model="itemObj.longitude" style="width:210px;" disabled @click="lngLatDia" placeholder="请点击右侧按钮选择经纬度"></el-input>
               <el-button type="primary" @click="lngLatDia" :disabled="inputDisabled">点击选择经纬度</el-button>
               <span style="color: #f00;" class="spanbtn" v-if="!lanbtn">请点击按钮选择经纬度</span>
             </el-form-item>
@@ -405,8 +401,8 @@
                     <el-checkbox-group v-model="valueVcheckList">
                       <div style="width:100%;" class="clearFix">
                         <div style="width:50%; float: left;" v-for="(valueV,indexV) in itemV.carwashsTypes" :key="indexV">
-                            <el-checkbox :label="valueV.strObj" @change="Vchange()">
-                              <el-input placeholder="请输入价格" type='number' min="0" onkeyup="this.value = this.value.replace(/[^\d.]/g,'');"  v-model="valueV.price" style="margin-bottom: 10px;" @blur="Vchange">
+                            <el-checkbox :label="valueV.strObj" @change="Vchange()" disabled>
+                              <el-input placeholder="请输入价格" type='number' min="0" onkeyup="this.value = this.value.replace(/[^\d.]/g,'');"  v-model="valueV.price" style="margin-bottom: 10px;" @blur="Vchange" disabled>
                                 <template slot="prepend">{{ valueV.dotsType }}</template>
                                 <template slot="append">元</template>
                               </el-input>
@@ -543,8 +539,7 @@
          </div>
        </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="editDialog = false">取 消</el-button>
-        <el-button type="primary" :loading="loadingBootm" @click="editDialogVisible" v-if="compileBtn">确 定</el-button>
+        <el-button @click="editDialog = false">返回列表</el-button>
       </span>
     </el-dialog>
   </div>
@@ -684,10 +679,6 @@ export default {
           openingBank: [
             { required: true, message: '开户行不能为空', trigger: 'blur'}
           ]
-          // storePhone: [
-          //   { required: true, message: '不能为空', trigger: 'blur' },
-          //   { validator: storePhone, trigger: 'blur' }
-          // ]
       },
       data: {
         current_page: 1,
@@ -1074,13 +1065,6 @@ export default {
     getPageData(e) {
       this.getData("page");
     },
-    apiFindMechanismName(){
-      findMechanismName().then(res=>{
-        if(res.code == 200){
-          this.organizationList = res.data         
-        }
-      })
-    },
     edit(item){
       // 改造数据获取绑定值，后台数据非常混乱，编辑查看新增以下代码均是改造数据
       if(item.dotServices){
@@ -1102,7 +1086,6 @@ export default {
           })
         })
       }
-      this.apiFindMechanismName()
       findYuyueCityByProvinceid({provinceid: item.provinceId}).then(res=>{
         this.cityList = res.data
       })
@@ -1157,104 +1140,6 @@ export default {
       this.inputDisabled = true
       this.disabledBtn = true
       this.compileBtn = false
-    },
-    compile(item){
-      // 改造数据获取绑定值，后台数据非常混乱，编辑查看新增以下代码均是改造数据
-      if(item.dotServices){
-        item.dotServices.forEach(v=>{
-          var dotObj = {}
-          // dotObj.id = Number(v.carwashId)
-          dotObj.id = v.carwashId
-          // dotObj.ids = Number(v.carwashsId)
-          dotObj.ids = v.carwashsId
-          this.valueVcheckList.push(JSON.stringify(dotObj))
-          this.serviceItemList.forEach(i=>{
-              if(i.id == v.carwashId){
-                i.carwashsTypes.forEach(t=>{
-                  if(t.id == v.carwashsId){
-                    t.price = v.price
-                  }
-                })
-              }
-          })
-        })
-      }
-      findYuyueCityByProvinceid({provinceid: item.provinceId}).then(res=>{
-        this.cityList = res.data
-      })
-      findYuyueAreasByCityid({cityid: item.cityId}).then(res=>{
-        this.countyList = res.data
-      })
-      this.arrLngLat = [item.latitude,item.longitude]
-      item.cityId = String(item.cityId)
-      item.provinceId = String(item.provinceId)
-      item.regionId = String(item.regionId)
-      if(item.mechanismId){
-        item.mechanismId = Number(item.mechanismId)
-      }
-      item.dotType = Number(item.dotType)
-      this.dotCode = item.dotCode
-      this.editDialog = true
-      this.dialogTitle = "编辑"
-      this.itemObj = item
-      this.itemObj.longitude = item.latitude + "/" + item.longitude
-      this.itemObj.businessHours = [item.businessHours , item.businessHours2]
-      if(item.trafficImage){
-        var trafficImage = JSON.parse(item.trafficImage)
-        this.trafficImage = trafficImage[0]
-      }
-      if(item.receptionImage){
-        var receptionImage = JSON.parse(item.receptionImage)
-        this.receptionImage = receptionImage[0]
-      }
-      if(item.honorImage){
-         var honorImage = JSON.parse(item.honorImage)
-         this.honorImage = honorImage[0]
-      }
-     if(item.constructionImage){
-       var constructionImage = JSON.parse(item.constructionImage)
-       this.constructionImage = constructionImage[0]
-     }
-     if(item.businessImage){
-       var businessImage = JSON.parse(item.businessImage)
-       this.businessImage = businessImage[0]
-     }
-     if(item.storeImages){
-       this.storeImage = item.storeImages
-       this.storeImages = item.storeImages
-       var ArrImg = []
-       item.storeImages.forEach(v=>{
-         var obj = {}
-         obj.url = v
-         obj.name = v.split("/").pop()
-         ArrImg.push(obj)
-       })
-       this.fileList_1 = ArrImg
-      }
-      this.alterDisabled = true
-      this.inputDisabled = false
-      this.disabledBtn = false
-      this.compileBtn = true
-      this.apiFindMechanismName()
-    },
-    newly(val){
-      this.editDialog = true
-      this.dialogTitle = "新增"
-      this.alterDisabled = false
-      this.inputDisabled = false
-      this.disabledBtn = false
-      this.compileBtn = true
-      this.urlBl = val
-      this.fileList_1 = []
-      this.fileList_2 = []
-      this.fileList_3 = []
-      this.fileList_4 = []
-      this.fileList_5 = []
-      this.fileList_6 = []
-      this.apiFindMechanismName()
-    },
-    close2(){
-        // this.inputBtn = true
     },
     editDialogVisible(){
       this.itemObj.storeImage = JSON.stringify(this.storeImage)
@@ -1321,49 +1206,6 @@ export default {
             return false;
           }
       });
-    },
-    exportData() {
-      // console.log(this.data.data);
-      if(this.data.data.length <= 0){
-        this.$message({
-            message: '暂无数据可导出~',
-            type: 'warning'
-          })
-      }else{
-        // axios({
-        //     url: 'http://192.168.0.161:8182/yuyuetrip/wash/dotExport',
-        //     method: 'get',
-        //     params: { pageNum: this.data.current_page , pageSize: this.data.per_page}
-        //   })
-      //   queryList: {
-      //   dotCode: null,
-      //   status: null,
-      //   dotName: null,
-      //   province: null,
-      //   city: null,
-      //   region: null,
-      //   phone: null,
-      //   nodeTypes: null,
-      //   recommender: null,
-      //   time: ["", ""],
-      // },
-      var {dotCode,status,dotName,province,city,region,phone,nodeTypes,recommender,time} = this.queryList
-        var startTime = time[0]
-        var endTime = time[1]
-        window.location.href = `${baseUrl}/wash/dotExport?pageNum=${this.data.current_page}&pageSize=${this.data.per_page}&status=${status}&dotCode=${dotCode}&dotName=${dotName}&province=${province}&city=${city}&region=${region}&phone=${phone}&nodeTypes=${nodeTypes}&recommender=${recommender}&startTime=${startTime}&endTime=${endTime}`
-        // row.exportDatabtn = false
-        // dotExport({ pageNum: this.data.current_page , pageSize: this.data.per_page}).then(res => {
-        //   console.log(res);
-        //   // console.log(res);
-        //   // this.$message({
-        //   //   message: '操作成功',
-        //   //   type: 'success'
-        //   // })
-        //   // this.down(`${this.thishostName}${res.url}`)
-
-        //   // row.exportDatabtn = false
-        // })
-      }
     },
     ApiAreaJson(){
       findYuyueProvinces().then(res=>{

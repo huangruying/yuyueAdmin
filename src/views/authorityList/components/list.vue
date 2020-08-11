@@ -52,22 +52,27 @@ export default {
     methods: {
         changeList(val){
             var obj = this.checkedCities
-
-            if(obj.id === val.pid){
-                 if(obj.arr.indexOf(val.pid) === -1){
-                     obj.arr.push(val.pid)
-                 }
-            }else{
-                if(obj.children){
-                   var objList = this.recursiveAlgorithm(obj.children,val.pid)
-                   console.log(objList);
-                    //  if(obj.arr.indexOf(objList.pid) === -1){
-                    //      obj.arr.push(val.pid)
-                    //   } 
+            if(obj.arr.indexOf(val.id) !== -1){
+                if(obj.id === val.pid){
+                    if(obj.arr.indexOf(val.pid) === -1){
+                        obj.arr.push(val.pid)
+                    }
+                }else{
+                    if(obj.children){
+                        var objList = this.recursiveAlgorithm(obj.children,val.pid)
+                        if(objList && objList.pid){
+                            if(obj.arr.indexOf(val.pid) === -1){
+                                    obj.arr.push(objList.id) 
+                                    if(obj.arr.indexOf(objList.pid) === -1){
+                                        obj.arr.push(objList.pid)
+                                    }
+                                }
+                        }
+                    }
                 }
             }
 
-            
+            console.log(obj.arr);
             
             // bus.$emit('checklist', { arr: obj.arr , id: obj.id})
             bus.$emit('checklist', {id: obj.id})   // 因为做了双向绑定，这一步的事件完全是多余的。仅是为了练手用

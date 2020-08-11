@@ -5,7 +5,7 @@
        <div class="input_box">
           <el-input
           v-model="queryList.orderNo"
-          placeholder="请输入订单号"
+          placeholder="请输入渠道订单号"
           class="input fl"
           @keyup.enter.native="handleFilter"/>
           <el-input
@@ -73,7 +73,7 @@
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="订单号" prop="orderNo" align="center">
+      <el-table-column label="渠道订单号" prop="orderNo" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.orderNo }}</span>
         </template>
@@ -158,7 +158,7 @@
         <el-divider content-position="left"><span class="title">订单信息</span></el-divider>
         <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;">
           <el-form label-position="right" ref="ruleForm" label-width="150px" :model="itemObj" class="clearFix">
-              <el-form-item label="订单号：" prop="orderno" style="width: 100%">
+              <el-form-item label="渠道订单号：" prop="orderno" style="width: 100%">
                   <el-input v-model="itemObj.orderno" style="width:50%" disabled></el-input>
               </el-form-item>
               <el-form-item label="悦途订单号：" prop="orderno" style="width: 100%">
@@ -335,7 +335,7 @@ export default {
       if(!(queryList.status == null)){
         data.status = queryList.status
       }
-      if (queryList.time[0] && queryList.time[1]) {
+      if (queryList.time && queryList.time[0] && queryList.time[1]) {
         data.startTime = queryList.time[0]
         data.endTime = queryList.time[1]
       }

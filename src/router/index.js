@@ -111,6 +111,12 @@ export const asyncRoutes = [
             meta: { title: '网点列表', icon: 'table' , roles: ['vsadm_servicer_list']}
           },
           {
+            path: 'nodeAudit',
+            name: 'nodeAudit',
+            component: () => import('@/views/nodeAudit/index'),
+            meta: { title: '网点审批', icon: 'table' , roles: ['vsadm_servicer_audit']}
+          },
+          {
             path: 'account',
             name: 'account',
             component: () => import('@/views/account/index'),

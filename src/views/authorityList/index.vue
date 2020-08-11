@@ -56,6 +56,7 @@
       :limit.sync="data.per_page"
       @pagination="getPageData"
     /> -->
+    <!-- 新增编辑本应该同一个弹窗，分开只是为了方便练手，不要在意 -->
     <!-- 编辑 -->
     <el-dialog
       :title="dialogTitle"
@@ -64,10 +65,22 @@
       width="50%"
       @close="close"
       center>
-        <el-input placeholder="请输入角色描述" v-model="roleDescribe">
+        <el-input placeholder="请输入角色描述" v-model="roleDescribe" class="input_auth">
             <template slot="prepend">角色描述</template>
         </el-input>
-      <authorityInfo :list.sync="authorityList" @dataList="checkboxList"></authorityInfo>
+      <!-- <authorityInfo :list.sync="authorityList" @dataList="checkboxList"></authorityInfo> -->
+      <el-tree
+        :data="dataChildren"
+        show-checkbox
+        default-expand-all
+        highlight-current
+        leafOnly
+        node-key="id"
+        :default-expanded-keys="expandedKeys"
+        :default-checked-keys="checkedKeys"
+        :props="defaultProps"
+        ref="tree2">
+      </el-tree>
       <span slot="footer" class="dialog-footer">
          <el-button @click="authorityDialog = false">取 消</el-button>
          <el-button type="primary" @click="confirmAuthority">确 定</el-button>
@@ -87,7 +100,19 @@
       <el-input placeholder="请输入角色描述" v-model="authority.roleDesc" class="input_auth">
           <template slot="prepend">角色描述</template>
       </el-input>
-      <authorityInfo :list.sync="authorityList" @dataList="checkboxList"></authorityInfo>
+      <!-- <authorityInfo :list.sync="authorityList" @dataList="checkboxList"></authorityInfo> -->
+      <el-tree
+        :data="dataChildren"
+        show-checkbox
+        default-expand-all
+        highlight-current
+        leafOnly
+        node-key="id"
+        :default-expanded-keys="expandedKeys"
+        :default-checked-keys="checkedKeys"
+        :props="defaultProps"
+        ref="tree">
+      </el-tree>
       <span slot="footer" class="dialog-footer">
          <el-button @click="authorityDialogNew = false">取 消</el-button>
          <el-button type="primary" @click="confirmAuthorityNew">确 定</el-button>
@@ -109,6 +134,8 @@ export default {
     },
     data(){
         return{
+            expandedKeys: [],
+            checkedKeys: [],
             loading: false,
             roleDescribe: "",
             id: "",
@@ -119,6 +146,11 @@ export default {
                 per_page: 15,
                 total: 0,
                 link: ""
+            },
+            dataChildren: [],
+            defaultProps: {
+                children: 'children',
+                label: 'name'
             },
             authority: {
                 roleName: "",
@@ -143,12 +175,15 @@ export default {
             }else if(!authority.roleDesc){
                 this.$message("请输入角色描述!")
             }else{
-                var arr = []
-                this.AuthList.forEach(v=>{
-                    if(v.arr){
-                        arr = arr.concat(v.arr)
-                    }
-                })
+                // var arr = []
+                // this.AuthList.forEach(v=>{
+                //     if(v.arr){
+                //         arr = arr.concat(v.arr)
+                //     }
+                // })
+                var arr1 = this.$refs.tree.getCheckedKeys() //选中
+                var arr2 = this.$refs.tree.getHalfCheckedKeys() //半选中
+                var arr = arr1.concat(arr2)
                 authority.permsIds = arr
                 saveBmRole(authority).then(res=>{
                     if(res.code == 200){
@@ -165,14 +200,17 @@ export default {
         },
         confirmAuthority(){
             // console.log(this.authorityList);  双向绑定的数据在这里，数据传来传去单纯练手用，包括文件插槽之类的，请不要在意
-            var arr = []
-            this.AuthList.forEach(v=>{
-                if(v.arr){
-                    arr = arr.concat(v.arr)
-                }else{
-                    arr.push(v)
-                }
-            })
+            // var arr = []
+            // this.AuthList.forEach(v=>{
+            //     if(v.arr){
+            //         arr = arr.concat(v.arr)
+            //     }else{
+            //         arr.push(v)
+            //     }
+            // })
+             var arr1 = this.$refs.tree2.getCheckedKeys() //选中
+             var arr2 = this.$refs.tree2.getHalfCheckedKeys() //半选中
+             var arr = arr1.concat(arr2)
             let data = {}
             data.userRoleList = arr
             data.roleDesc = this.roleDescribe
@@ -221,28 +259,102 @@ export default {
                 });          
             });
         },
-        checkboxList(e){
-            // 这个事件多余的，单纯练手
-            this.AuthList = e.dataList
+        // 以下是用了插件
+        apiList2(){
+            findTreeMenus().then(res=>{
+                var data = res.data
+                this.dataChildren = data
+            })
+        },
+        close(){
+            this.expandedKeys = []
+            this.checkedKeys = []
+            this.AuthList = []
+            this.id = ""
+            this.getData()
+
+            // this.dialogTitle = ""
+            // this.infoArr = []
+            // this.AuthList = []
+            // this.authorityList = []
+            // this.roleDescribe = ""
+        },
+        closeNew(){
+            this.expandedKeys = []
+            this.checkedKeys = []
+            this.getData()
+
+            // this.authorityList = []
+            // this.authority = {
+            //     roleName: "",
+            //     roleDesc: ""
+            // }
+            // this.infoArr = []
         },
         newlyAuthority(){
             this.authorityDialogNew = true
             this.dialogTitle = "新增角色"
-            this.apiList()
+            this.apiList2()
         },
         compile(item){
             this.roleDescribe = item.roleDesc
             this.authorityDialog = true
             this.dialogTitle = "编辑权限"
             this.id = item.id
-            if(item.rolePermissions){   // 初始化数据
-               this.apiDataList(item.rolePermissions)
-               this.AuthList = this.foreachItem(item.rolePermissions)
-               //  console.log(this.AuthList);
-            }else{
-               this.apiList()
+            if(item.rolePermissions){
+                var arr = this.foreachItem(item.rolePermissions)
+                this.expandedKeys = arr
+                this.checkedKeys = arr
             }
+            this.apiList2()
+
+            // if(item.rolePermissions){   // 初始化数据
+            //    this.apiDataList(item.rolePermissions)
+            //    this.AuthList = this.foreachItem(item.rolePermissions)
+            //    //  console.log(this.AuthList);
+            // }else{
+            //    this.apiList()
+            // }
         },
+        foreachItem(item){
+            item.forEach(v=>{
+                if(v.children){
+                    this.foreachItem(v.children)
+                }else{
+                    this.AuthList.push(v.id) // 仅返回最里层
+                }
+            })
+            return this.AuthList
+            // item.forEach(v=>{
+            //     this.AuthList.push(v.id)
+            //     if(v.children){
+            //         this.foreachItem(v.children)
+            //     }
+            // })
+            // return this.AuthList
+        },
+        getData(filter){
+            this.loading = true
+            findRoleList().then(res=>{
+                this.loading = false
+                if(res.data && res.code == 200 && res.data.length>0){
+                    this.data.data = res.data
+                }else{
+                    this.$message(res.msg)
+                }
+            })
+        },
+        resetGetData(){
+            this.getData()
+        },
+        getPageData(e) {
+            this.getData("page");
+        },
+
+
+
+
+        // 以下练手用，请不要在意
         apiList(){
             findTreeMenus().then(res=>{
                res.data.map(v=>{
@@ -253,30 +365,9 @@ export default {
               this.authorityList = res.data
             })
         },
-        close(){
-            this.id = ""
-            this.dialogTitle = ""
-            this.infoArr = []
-            this.AuthList = []
-            this.roleDescribe = ""
-            this.getData()
-        },
-        closeNew(){
-            this.authority = {
-                roleName: "",
-                roleDesc: ""
-            }
-            this.infoArr = []
-            this.getData()
-        },
-        foreachItem(item){
-            item.forEach(v=>{
-                this.AuthList.push(v.id)
-                if(v.children){
-                    this.foreachItem(v.children)
-                }
-            })
-            return this.AuthList
+        checkboxList(e){
+            // 这个事件多余的，单纯练手
+            this.AuthList = e.dataList
         },
         apiDataList(rolePermissions){
             // console.log(rolePermissions);
@@ -309,23 +400,6 @@ export default {
             })
             return arr
         },
-        getData(filter){
-            this.loading = true
-            findRoleList().then(res=>{
-                this.loading = false
-                if(res.data && res.code == 200 && res.data.length>0){
-                    this.data.data = res.data
-                }else{
-                    this.$message(res.msg)
-                }
-            })
-        },
-        resetGetData(){
-            this.getData()
-        },
-        getPageData(e) {
-            this.getData("page");
-        },
     }
 }
 </script>
@@ -355,5 +429,6 @@ export default {
 }
 .input_auth{
     margin-top: 30px;
+    margin-bottom: 30px;
 }
 </style>
