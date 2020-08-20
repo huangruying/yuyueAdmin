@@ -45,22 +45,6 @@ service.interceptors.response.use(
         type: 'error',
         duration: 5 * 1000
       })
-      // 302:登陆过期了;
-      if (res.code === '302') {
-        MessageBox.confirm(
-          '你已被登出，可以取消继续留在该页面，或者重新登录',
-          '确定登出',
-          {
-            confirmButtonText: '重新登录',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }
-        ).then(() => {
-          store.dispatch('LogOut').then(() => {
-            location.reload() // 为了重新实例化vue-router对象 避免bug
-          })
-        })
-      }
       return Promise.reject('error')  // 记得改回这里
       // return response.data
     } else {
@@ -69,12 +53,28 @@ service.interceptors.response.use(
   },
   error => {
     console.log('err' + error) // for debug
-    Message({
-      // message: error.msg,
-      message: '请求超时了,请重试',
-      type: 'error',
-      duration: 5 * 1000
-    })
+    // 登录过期或者没有权限
+    if(error.response.status == 401){
+      MessageBox.confirm(
+        '登录已过期，您可以取消继续留在该页面，或者重新登录',
+        '确定登出',
+        {
+          confirmButtonText: '重新登录',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).then(() => {
+          store.dispatch('user/logout')
+          window.location.href = '/admin/'
+      })
+    }else{
+      Message({
+        // message: error.msg,
+        message: '请求超时了,请重试',
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }
     return Promise.reject(error)
   }
 )

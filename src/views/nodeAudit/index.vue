@@ -1065,6 +1065,13 @@ export default {
     getPageData(e) {
       this.getData("page");
     },
+    apiFindMechanismName(){
+      findMechanismName().then(res=>{
+        if(res.code == 200){
+          this.organizationList = res.data         
+        }
+      })
+    },
     edit(item){
       // 改造数据获取绑定值，后台数据非常混乱，编辑查看新增以下代码均是改造数据
       if(item.dotServices){
@@ -1078,7 +1085,7 @@ export default {
           this.serviceItemList.forEach(i=>{
               if(i.id == v.carwashId){
                 i.carwashsTypes.forEach(t=>{
-                  if(t.ids == v.carwashsId){
+                  if(t.id == v.carwashsId){
                     t.price = v.price
                   }
                 })
@@ -1086,6 +1093,7 @@ export default {
           })
         })
       }
+      this.apiFindMechanismName()
       findYuyueCityByProvinceid({provinceid: item.provinceId}).then(res=>{
         this.cityList = res.data
       })

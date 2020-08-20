@@ -87,3 +87,19 @@ export function saveYuyueStations(data) {
     data: data
   })
 }
+// 新改查询车站
+export function listStation4bm(data) {
+  return request({
+    url: '/wash/station/listStation4bm',
+    method: 'post',
+    data: data
+  })
+}
+// 新改查询大厅
+export function listHall4bm(data) {
+  return request({
+    url: '/wash/station/listHall4bm',
+    method: 'post',
+    data: data
+  })
+}

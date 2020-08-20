@@ -296,7 +296,7 @@
               <el-input v-model="itemObj.dotAbbreviation" style="width:210px" :disabled="inputDisabled"></el-input>
             </el-form-item>
             <el-form-item label="网点类型:" prop="dotType" style="width:50%">
-              <el-select v-model="itemObj.dotType" style="width:210px" placeholder="网点类型">
+              <el-select v-model="itemObj.dotType" style="width:210px" placeholder="网点类型" :disabled="inputDisabled">
                 <el-option
                   v-for="item in nodeTypesList"
                   :label="item.name"
@@ -307,7 +307,7 @@
               <!-- <el-input v-model="itemObj.mechanismName" style="width:210px" :disabled="inputDisabled"></el-input> -->
             </el-form-item>
             <el-form-item label="所属机构:" prop="mechanismId" style="width:50%">
-              <el-select v-model="itemObj.mechanismId" style="width:210px" placeholder="所属机构">
+              <el-select v-model="itemObj.mechanismId" style="width:210px" placeholder="所属机构" :disabled="inputDisabled">
                 <el-option
                   v-for="item in organizationList"
                   :label="item.mechanismName"
@@ -405,8 +405,8 @@
                     <el-checkbox-group v-model="valueVcheckList">
                       <div style="width:100%;" class="clearFix">
                         <div style="width:50%; float: left;" v-for="(valueV,indexV) in itemV.carwashsTypes" :key="indexV">
-                            <el-checkbox :label="valueV.strObj" @change="Vchange()">
-                              <el-input placeholder="请输入价格" type='number' min="0" onkeyup="this.value = this.value.replace(/[^\d.]/g,'');"  v-model="valueV.price" style="margin-bottom: 10px;" @blur="Vchange">
+                            <el-checkbox :label="valueV.strObj" @change="Vchange()" :disabled="inputDisabled">
+                              <el-input placeholder="请输入价格" type='number' min="0" :disabled="inputDisabled" onkeyup="this.value = this.value.replace(/[^\d.]/g,'');"  v-model="valueV.price" style="margin-bottom: 10px;" @blur="Vchange">
                                 <template slot="prepend">{{ valueV.dotsType }}</template>
                                 <template slot="append">元</template>
                               </el-input>
@@ -583,7 +583,7 @@ export default {
       itemVcheckList: [],
       valueVcheckList: [],
       valueArr: [],
-      center: [116.42792, 39.902896], //经度+纬度
+      center: [113.280637, 23.125178], //经度+纬度
       search_key: "", //搜索值
       lanbtn: true,
       lists: [], //地点列表
@@ -775,15 +775,15 @@ export default {
       //初始化地图
       var map = new AMap.Map("container", {
         zoom: 14, //缩放级别
-        // center: this.center //设置地图中心点
-        //resizeEnable: true,  //地图初始化加载定位到当前城市
+        center: this.center, //设置地图中心点
+        resizeEnable: true,  //地图初始化加载定位到当前城市
       });
       //获取初始中心点并赋值
       var currentCenter = map.getCenter(); //此方法是获取当前地图的中心点
+      // console.log('-----------------------------' + currentCenter);
       this.center = [currentCenter.lng, currentCenter.lat]; //将获取到的中心点的纬度经度赋值给data的center
-      console.log(this.center);
 
-      //创建标记
+      //创建标记 
       this.marker = new AMap.Marker({
         position: new AMap.LngLat(currentCenter.lng, currentCenter.lat) // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
       });
@@ -876,7 +876,7 @@ export default {
       this.lngLatDialog = false
     },
     onSearchLi(e) {
-      console.log(e.lng + "-" + e.lat);
+      // console.log(e.lng + "----------" + e.lat);
       this.center = [e.lng, e.lat];
       // console.log(this.center);
       this.search_key = "";
@@ -1094,7 +1094,7 @@ export default {
           this.serviceItemList.forEach(i=>{
               if(i.id == v.carwashId){
                 i.carwashsTypes.forEach(t=>{
-                  if(t.ids == v.carwashsId){
+                  if(t.id == v.carwashsId){
                     t.price = v.price
                   }
                 })

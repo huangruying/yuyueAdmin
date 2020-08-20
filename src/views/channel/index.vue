@@ -371,21 +371,23 @@ export default {
             if( v.dateline){
               v.dateline = formatTime(v.dateline*1000,'yyyy-mm-dd hh:mm:ss')
             }
-            v.types.forEach(i=>{
-              if(i == 0){
-                typesCope.push("其他")
-              }else if(i == 1){
-                typesCope.push("贵宾厅")
-              }else if(i == 10){
-                typesCope.push("车后")
-              }else if(i == 100){
-                typesCope.push("酒店")
-              }else if(i == 1000){
-                typesCope.push("门票")
-              }else if(i == 10000){
-                typesCope.push("火车票")
-              }
-            })
+            if(v.types){
+              v.types.forEach(i=>{
+                if(i == 0){
+                  typesCope.push("其他")
+                }else if(i == 1){
+                  typesCope.push("贵宾厅")
+                }else if(i == 10){
+                  typesCope.push("车后")
+                }else if(i == 100){
+                  typesCope.push("酒店")
+                }else if(i == 1000){
+                  typesCope.push("门票")
+                }else if(i == 10000){
+                  typesCope.push("火车票")
+                }
+              })
+            }
             v.typesCope = typesCope
           })
         }

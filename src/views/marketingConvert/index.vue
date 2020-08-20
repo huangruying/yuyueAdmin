@@ -392,8 +392,8 @@ export default {
           formData.append('file', this.fileList[0].raw)
           formData.append('id', this.codeId)
           formData.append('pirationTime', this.valueDate)
+          this.loadingUpload = false
           importYyBearercardByCode(formData).then(res => {
-            this.loadingUpload = false
             if(res.code == 200){
               this.uploaddialogVisible = false
               this.apiCode(this.codeId)
@@ -409,7 +409,6 @@ export default {
             }
           })
         } else {
-          this.loadingUpload = false
           this.$message({
             message: '请选择Excle文件!'
           })

@@ -36,12 +36,36 @@
           <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
             <el-dropdown-item>Docs</el-dropdown-item>
           </a> -->
+          <el-dropdown-item divided @click.native="modification">
+            <span style="display:block;">修改资料</span>
+          </el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <el-dialog
+      title="修改资料"
+      :visible.sync="dialogVisible"
+      width="30%"
+      center>
+      <el-form :inline="true" :model="formData" :rules="rules" ref="ruleForm">
+        <el-form-item label="用户名" style="width: 100%;" prop="username">
+          <el-input v-model="formData.username" placeholder="请输入用户名称"></el-input>
+        </el-form-item>
+        <el-form-item label="原密码" style="width: 100%;" prop="password">
+          <el-input v-model="formData.password" placeholder="请输入原密码"></el-input>
+        </el-form-item>
+        <el-form-item label="新密码" style="width: 100%;" prop="newPassword">
+          <el-input v-model="formData.newPassword" placeholder="请输入新密码"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -53,7 +77,7 @@ import ErrorLog from '@/components/ErrorLog'
 import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
-
+import { userupdatePwd } from '@/api/user'
 export default {
   components: {
     Breadcrumb,
@@ -69,6 +93,30 @@ export default {
       'avatar',
       'device'
     ])
+  },
+  data(){
+    return {
+      dialogVisible: false,
+      userid: "",
+      formData: {
+        username: "",
+        password: "",
+        newPassword: ""
+      },
+      rules: {
+          username: [
+            { required: true, message: '请输入用户名称', trigger: 'blur' }
+          ],
+          password: [
+            { required: true, message: '请输入原密码', trigger: 'blur' },
+            { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
+          ],
+          newPassword: [
+            { required: true, message: '请输入新密码', trigger: 'blur' },
+            { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
+          ],
+      }
+    }
   },
   methods: {
     toggleSideBar() {
@@ -95,6 +143,35 @@ export default {
       //     type: 'error'
       //   })
       // }
+    },
+    modification(){
+        var data = localStorage.getItem('data')
+        var data = JSON.parse(data)
+        this.userid = data.id
+        this.formData.username = data.name
+        this.dialogVisible = true
+    },
+    async submitForm(){
+      this.$refs['ruleForm'].validate((valid) => {
+        if (valid) {
+          this.formData.id = this.userid
+          userupdatePwd(this.formData).then(res=>{
+            if(res.code == 200){
+              this.$message({
+                type: 'success',
+                message: "修改成功！"
+              })
+              this.$store.dispatch('user/logout')
+              this.$router.push('/login')
+            }else{
+              this.$message(res.msg)
+            }
+          })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     }
   }
 }

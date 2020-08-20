@@ -3,22 +3,7 @@
     <el-divider content-position="left"><span class="title">查询</span></el-divider>
     <div class="query">
        <div class="input_box">
-          <el-input
-          v-model="queryList.stationName"
-          placeholder="请输入车站名称"
-          class="input fl"
-          @keyup.enter.native="handleFilter"/>
-          <el-input
-          v-model="queryList.province"
-          placeholder="请输入省份"
-          class="input fl"
-          @keyup.enter.native="handleFilter"/>
-          <el-input
-          v-model="queryList.city"
-          placeholder="请输入所在市"
-          class="input fl"
-          @keyup.enter.native="handleFilter"/>
-          <el-select v-model="queryList.type" @change="getData" class="input fl" placeholder="请选择类型">
+         <el-select v-model="queryList.type" @change="getData" class="input fl" placeholder="请选择类型">
             <el-option
               v-for="item in statusList"
               :label="item.name"
@@ -26,15 +11,35 @@
               :key="item.type"
             ></el-option>
           </el-select>
+          <el-input
+          v-model="queryList.province"
+          placeholder="请输入省份"
+          class="input fl"
+          @keyup.enter.native="handleFilter"/>
+          <el-input
+          v-model="queryList.stationCode"
+          placeholder="请输入车站编码"
+          class="input fl"
+          @keyup.enter.native="handleFilter"/>
+          <el-input
+          v-model="queryList.stationName"
+          placeholder="请输入车站名称"
+          class="input fl"
+          @keyup.enter.native="handleFilter"/>
+          <!-- <el-input
+          v-model="queryList.city"
+          placeholder="请输入所在市"
+          class="input fl"
+          @keyup.enter.native="handleFilter"/> -->
        </div> 
        <div class="btn_box">
          <div>
-           <el-button type="danger" @click="remove(2)">批量删除</el-button>
+           <!-- <el-button type="danger" @click="remove(2)">批量删除</el-button> -->
            <el-button type="primary" icon="el-icon-search" @click="getData">搜索</el-button>
            <el-button type="primary" @click="reset">重置</el-button>
          </div>
          <div>
-           <el-button type="primary" @click="newlyIncreased">新增</el-button>
+           <!-- <el-button type="primary" @click="newlyIncreased">新增</el-button> -->
            <el-button type="primary" icon="el-icon-refresh" @click="resetGetData"></el-button>
          </div>
        </div>
@@ -90,8 +95,8 @@
       </el-table-column>
       <el-table-column label="操作" fixed="right" prop="audit_status" align="center">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" @click="compile(scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="remove(scope.row)">删除</el-button>
+          <!-- <el-button size="mini" type="primary" @click="compile(scope.row)">编辑</el-button>
+          <el-button size="mini" type="danger" @click="remove(scope.row)">删除</el-button> -->
           <el-button size="mini" type="success" class="btnCa" @click="look(scope.row)">查看大厅</el-button>
         </template>
       </el-table-column>
@@ -148,7 +153,7 @@
       :title="text"
       :visible.sync="visibleLobby"
       :close-on-click-modal="false"
-      width="80%"
+      width="90%"
       @close="close2"
       center>
       <el-dialog
@@ -222,7 +227,7 @@
       </el-dialog>
        <div class="btn_box" style="margin-bottom:10px;">
            <div></div>
-           <el-button type="primary" @click="newlyDivider">新增</el-button>
+           <!-- <el-button type="primary" @click="newlyDivider">新增</el-button> -->
        </div>
         <el-divider content-position="left"><span class="title">基本信息</span></el-divider>
         <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;">
@@ -238,16 +243,16 @@
                 <img :src="scope.row.hallPic" alt="" style="height:75px;">
               </template>
             </el-table-column>
+            <el-table-column label="站厅悦途编码" prop="hallCode" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.hallCode }}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="大厅名称" prop="hallName" align="center">
               <template slot-scope="scope">
                 <span>{{ scope.row.hallName }}</span>
               </template>
             </el-table-column>
-            <!-- <el-table-column label="门头名称" prop="hallName" align="center">
-              <template slot-scope="scope">
-                <span>{{ scope.row.hallName }}</span>
-              </template>
-            </el-table-column> -->
             <el-table-column label="营业时间" prop="businessHours" align="center">
               <template slot-scope="scope">
                 <span>{{ scope.row.businessHours }}</span>
@@ -258,27 +263,37 @@
                 <span>{{ scope.row.servicePhone }}</span>
               </template>
             </el-table-column>
+            <el-table-column label="营业状态" prop="hallStatus" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.hallStatus }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="车站类型" prop="stationType" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.stationType }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="站厅类型" prop="hallType" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.hallType }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="服务级别" prop="serviceLevel" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.serviceLevel }}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="大厅地址" prop="hallLocation" align="center">
               <template slot-scope="scope">
                 <span>{{ scope.row.hallLocation }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="修改时间" prop="updateTime" align="center">
-              <template slot-scope="scope">
-                <span>{{ scope.row.updateTime }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="营业状态" prop="hallStatus" align="center">
-              <template slot-scope="scope">
-                <span>{{ scope.row.hallStatus==1? "正在营业": "已停业" }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" fixed="right" prop="audit_status" align="center">
+            <!-- <el-table-column label="操作" fixed="right" prop="audit_status" align="center">
               <template slot-scope="scope">
                 <el-button size="mini" type="primary" @click="lobbyCompile(scope.row)">编辑</el-button>
                 <el-button size="mini" type="danger" @click="lobbyRemove(scope.row)">删除</el-button>
               </template>
-            </el-table-column>
+            </el-table-column> -->
           </el-table>
           <pagination
             v-show="lobbyData.total>0"
@@ -297,7 +312,7 @@
 </template>
 
 <script>
-import { listStationsNameInfos , delStationsNameInfo , findYuyueProvinces , findYuyueCityByProvinceid , updateYuyueStationInfo , saveYuyueStationInfo , findStationsByIds , delYuyueStations , findHallService , updateYuyueStations , saveYuyueStations } from '@/api/guest/yuetuSite'
+import { listStationsNameInfos , delStationsNameInfo , findYuyueProvinces , findYuyueCityByProvinceid , updateYuyueStationInfo , saveYuyueStationInfo , findStationsByIds , delYuyueStations , findHallService , updateYuyueStations , saveYuyueStations , listStation4bm , listHall4bm } from '@/api/guest/yuetuSite'
 import { dotOssUpload } from '@/api/nodeList'
 import Pagination from "@/components/Pagination"
 // import lobby from "@/components/yuetuLobby"
@@ -360,8 +375,9 @@ export default {
       },
       queryList: {
         stationName: null,
+        stationCode: null,
         province: null,
-        city: null,
+        // city: null,
         type: null
       },
       statusList: [
@@ -555,7 +571,7 @@ export default {
       data.pageNum = this.lobbyData.current_page
       data.pageSize = this.lobbyData.per_page
       data.stationId = this.stationId
-      findStationsByIds(data).then(res=>{
+      listHall4bm(data).then(res=>{
          this.dialogLoading = false;
         if (!res.data || res.data.length <= 0) {
           this.$message("暂无数据~")
@@ -568,7 +584,51 @@ export default {
           this.lobbyData.per_page = res.pageSize
           this.lobbyData.total = res.total
           this.lobbyData.data.forEach(v=>{
-            
+            if(v.hallPic.indexOf(",") == -1){
+              v.hallPic = v.hallPic
+            }else{
+              v.hallPic = v.hallPic.split(",")[0]
+            }
+            if(v.hallStatus == 1){
+              v.hallStatus = "正常"
+            }else if(v.hallStatus == 2){
+              v.hallStatus = "暂停"
+            }else{
+              v.hallStatus = "关闭"
+            }
+            if(v.serviceLevel == 1){
+              v.serviceLevel = "仅年卡"
+            }else if(v.serviceLevel == 2){
+              v.serviceLevel = "年卡次卡"
+            }else{
+              v.serviceLevel = "未知"
+            }
+            if(v.stationType == 1){
+              v.stationType = "高铁火车站"
+            }else if(v.stationType == 2){
+              v.stationType = "国内机场"
+            }else{
+              v.stationType = "国际/中国港澳台机场"
+            }
+            if(v.hallType == 1){
+              v.hallType = "自营-悦途厅"
+            }else if(v.hallType == 2){
+              v.hallType = "自营-独立冠名厅"
+            }else if(v.hallType == 3){
+              v.hallType = "自营-联合冠名厅"
+            }else if(v.hallType == 4){
+              v.hallType = "非自营厅"
+            }else if(v.hallType == 5){
+              v.hallType = "联营独立冠名厅"
+            }else if(v.hallType == 6){
+              v.hallType = "直签机场厅"
+            }else if(v.hallType == 7){
+              v.hallType = "第三方机场厅"
+            }else if(v.hallType == 8){
+              v.hallType = "国旅厅"
+            }else if(v.hallType == 9){
+              v.hallType = "爱心区"
+            }
           })
         }
       })
@@ -694,12 +754,15 @@ export default {
       if (queryList.stationName) {
         data.stationName = queryList.stationName
       }
+       if (queryList.stationCode) {
+        data.stationCode = queryList.stationCode
+      }
       if (queryList.province) {
         data.province = queryList.province
       }
-      if (queryList.city) {
-        data.city = queryList.city
-      }
+      // if (queryList.city) {
+      //   data.city = queryList.city
+      // }
       if(!(queryList.type == null)){
         data.type = queryList.type
       }
@@ -710,7 +773,7 @@ export default {
       }
       data.pageNum = this.data.current_page
       data.pageSize = this.data.per_page
-      listStationsNameInfos(data).then(res=>{
+      listStation4bm(data).then(res=>{
         // this.data = res;
         this.loading = false;
         if (!res.data || res.data.length <= 0) {
@@ -758,8 +821,9 @@ export default {
     reset(){
       this.queryList = {
         stationName: null,
+        stationCode: null,
         province: null,
-        city: null,
+        // city: null,
         type: null
       }
     },

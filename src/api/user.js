@@ -39,3 +39,11 @@ export function tt(data) { //测试权限动态添加路由
     data
   })
 }
+
+export function userupdatePwd(data) {
+  return request({
+    url: '/wash/user/updatePwd',
+    method: 'post',
+    data
+  })
+}
