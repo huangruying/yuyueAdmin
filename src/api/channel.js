@@ -39,3 +39,11 @@ export function updateExamine(data) {
       data
     })
   }
+
+  export function getChannelName(data) {
+    return request({
+      url: '/wash/product/getChannelName',
+      method: 'post',
+      data
+    })
+  }

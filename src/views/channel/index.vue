@@ -34,17 +34,17 @@
         type="selection"
         width="50">
      </el-table-column> -->
-      <el-table-column label="ID" prop="id" fixed align="center" width="90px">
+      <el-table-column label="ID" prop="id" align="center" width="90px">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="渠道名称" prop="name" fixed align="center">
+      <el-table-column label="渠道名称" prop="name" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="别名" prop="alias" fixed align="center">
+      <el-table-column label="别名" prop="alias" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.alias }}</span>
         </template>
@@ -59,12 +59,12 @@
           <span>{{ scope.row.secret }}</span>
         </template>
       </el-table-column> -->
-      <el-table-column label="渠道编码" prop="code" fixed align="center">
+      <el-table-column label="渠道编码" prop="code" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="合作类型" prop="types" fixed align="center">
+      <el-table-column label="合作类型" prop="types" align="center">
         <template slot-scope="scope">
           <div v-for="(value,index) in scope.row.typesCope" :key="index">{{ value }}</div>
         </template>
@@ -74,7 +74,7 @@
           <span>{{ scope.row.reconAmount }}</span>
         </template>
       </el-table-column> -->
-      <el-table-column label="添加时间" prop="dateline" fixed align="center">
+      <el-table-column label="添加时间" prop="dateline" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.dateline }}</span>
         </template>
@@ -114,6 +114,16 @@
               <el-form-item label="渠道名称：" prop="name" style="width: 100%">
                   <el-input v-model="itemObj.name" style="width:50%" placeholder="请输入渠道名"></el-input>
               </el-form-item>
+              <el-form-item label="所属父级渠道：" prop="pid" style="width: 100%">
+                  <el-select v-model="itemObj.pid" style="width:50%" placeholder="没有父级可不选" clearable>
+                    <el-option
+                      v-for="item in channeList"
+                      :label="item.name"
+                      :value="item.id"
+                      :key="item.id"
+                    ></el-option>
+                  </el-select>
+              </el-form-item>
               <el-form-item label="别名：" prop="alias" style="width: 100%">
                   <el-input v-model="itemObj.alias" style="width:50%" placeholder="请输入别名"></el-input>
               </el-form-item>
@@ -138,14 +148,14 @@
         </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialog = false">取 消</el-button>
-       <el-button type="primary" :loading="loadingBootm" @click="itemEditDialog">确 定</el-button>
+        <el-button type="primary" :loading="loadingBootm" @click="itemEditDialog">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { findWashChannel, updateExamine, delWashChannel, updateWashChannel, saveWashChannel } from '@/api/channel'
+import { findWashChannel, updateExamine, delWashChannel, updateWashChannel, saveWashChannel, getChannelName } from '@/api/channel'
 import Pagination from "@/components/Pagination"
 import formatTime from "@/utils/formatTime"
 export default {
@@ -161,6 +171,7 @@ export default {
       editDialog: false,
       loading: false,
       itemArr: [],
+      channeList: [],
       itemObj: {
         types: []
       },
@@ -247,14 +258,31 @@ export default {
     compile(item){
       this.editDialog = true
       this.itemObj = item
+      if(item.pid == -1){
+        this.itemObj.pid = ""
+      }else{
+        this.itemObj.pid = item.pid
+      }
+      this.apiGetChannelName()
     },
     newlyIncreased(){
       this.editDialog = true
+      this.apiGetChannelName()
+    },
+    apiGetChannelName(){
+      getChannelName().then(res=>{
+        this.channeList = res.data
+      })
     },
     itemEditDialog(){
       this.$refs['ruleForm'].validate((valid) => {
           if (valid){
               var data = {}
+              if(this.itemObj.pid){
+                data.pid = this.itemObj.pid
+              }else{
+                data.pid = -1
+              }
               if(this.itemObj.id){
                 data.id = this.itemObj.id
                 data.name = this.itemObj.name
@@ -387,6 +415,8 @@ export default {
                   typesCope.push("火车票")
                 }
               })
+            }else{
+              v.types = []
             }
             v.typesCope = typesCope
           })

@@ -131,7 +131,7 @@
     <el-dialog
       :title="dialogTitle"
       :visible.sync="editDialog"
-      width="80%"
+      width="92%"
       :close-on-click-modal="false"
       @close="close"
       center>
@@ -143,7 +143,7 @@
         <!-- 基本内容 -->
         <el-divider content-position="left" v-if="btnss == 1"><span class="title">基本内容</span></el-divider>
         <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;" v-if="btnss == 1">
-          <el-form label-position="right" ref="ruleForm" :rules="rules" label-width="150px" :model="itemObj" class="clearFix">
+          <el-form label-position="right" ref="ruleForm" :rules="informRules" label-width="150px" :model="itemObj" class="clearFix">
               <el-form-item label="产品名称：" prop="name" style="width: 100%">
                   <el-input v-model="itemObj.name" style="width:50%" placeholder="请输入产品名称"></el-input>
               </el-form-item>
@@ -153,17 +153,7 @@
               <el-form-item label="产品简介：" prop="desc" style="width: 100%">
                   <el-input v-model="itemObj.desc" style="width:50%" placeholder="请输入产品简介"></el-input>
               </el-form-item>
-              <el-form-item label="所属渠道商：" prop="desc" style="width: 100%">
-                <el-select v-model="itemObj.channelids" filterable multiple placeholder="请选择所属渠道商" style="width: 50%" @change="changeID">
-                  <el-option
-                    v-for="item in channelList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="对应产品：" prop="desc" style="width: 100%">
+              <el-form-item label="对应产品：" prop="valueList" style="width: 100%">
                 <el-cascader v-model="valueList" :options="infoList" filterable :props="props" style="width: 50%" @change="changeInfo" placeholder="请选择对应产品及所属数量">
                   <template slot-scope="{ node, data }">
                     <div class="item_box">
@@ -174,6 +164,34 @@
                     </div>
                   </template>
                 </el-cascader>
+              </el-form-item>
+              <el-form-item label="所属渠道商：" prop="channelids" style="width: 100%">
+                <el-select v-model="itemObj.channelids" filterable multiple placeholder="请选择所属渠道商" style="width: 50%" @change="changeID">
+                  <el-option
+                    v-for="item in channelList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="渠道产品价格：" style="width: 100%">
+                  <div class="channel_list" v-for="(val,idx) in productConfigs" :key="idx">
+                    <div class="channel_name">{{val.name}}</div>
+                    <div class="price_list" v-for="(pc,pcIndex) in val.pc" :key="pcIndex">
+                      <div class="price_name">{{pc.label}}</div>
+                      <el-input placeholder="请输入价格" v-model="pc.sale" class="input_w" @input="forceUpdate" oninput="value=value.replace(/[^0-9.]/g,'')">
+                        <template slot="prepend">销售价</template>
+                      </el-input>
+                      <el-input placeholder="请输入价格" v-model="pc.pay" class="input_w" @input="forceUpdate" oninput="value=value.replace(/[^0-9.]/g,'')">
+                        <template slot="prepend">采购价</template>
+                      </el-input>
+                      <el-radio-group v-model="pc.type" @change="forceUpdate">
+                        <el-radio :label="1">下单支付</el-radio>
+                        <el-radio :label="2">核销支付</el-radio>
+                      </el-radio-group>
+                    </div>
+                  </div>
               </el-form-item>
               <el-form-item label="是否需要支付：" style="width: 100%">
                 <el-radio-group v-model="itemObj.isPay">
@@ -224,7 +242,7 @@
         <!-- 权益介绍 -->
         <el-divider content-position="left" v-if="btnss == 2"><span class="title">权益介绍</span></el-divider>
          <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;" v-if="btnss == 2">
-           <el-form label-position="right" ref="ruleForm" :rules="rules" label-width="150px" :model="itemObj" class="clearFix">
+           <el-form label-position="right" label-width="150px" :model="itemObj" class="clearFix">
              <el-form-item label="权益简介：">
                 <div class="editorBox">
                     <!-- 调用富文本编辑器 -->
@@ -283,6 +301,7 @@ export default {
     return {
       // equityBrief: "",
       // equity: "",
+      productConfigs: [],
       valueList: "",
       itemID: "",
       imageUrl: "",
@@ -303,10 +322,18 @@ export default {
       editDialog: false,
       itemObj: {},
       itemArr: [],
-      rules: {
-          username: [
-            { required: true, message: '不能为空', trigger: 'blur' },
-            // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+      informRules: {
+          name: [
+            { required: true, message: '请输入产品名称！', trigger: 'blur' }
+          ],
+          price: [
+            { required: true, message: '请输入产品价格！', trigger: 'blur' }
+          ],
+          desc: [
+            { required: true, message: '请输入产品简介！', trigger: 'blur' }
+          ],
+          channelids: [
+            { required: true, message: '请选择所属渠道商！', trigger: 'blur' }
           ]
       },
       data: {
@@ -423,6 +450,62 @@ export default {
     this.smallIcon()
   },
   methods: {
+    clickInfo(){
+      var productList = [] // 选中对应产品
+      if(this.infoList.length > 0){
+        this.infoList.forEach(v=>{
+          for(var l = 0; l< this.infoArr.length; l++){
+            if(this.infoArr[l] && v.value == this.infoArr[l]){
+              v.pay = ""
+              v.sale = ""
+              v.type = 1
+              productList.push(v)
+            }
+          }
+        })
+      }
+      var channelList = [] // 选中渠道
+      this.channelList.forEach(c=>{
+        if(this.itemObj.channelids && this.itemObj.channelids.length>0){
+          this.itemObj.channelids.forEach(cid=>{
+            if(cid === c.id){
+              let arr = JSON.parse(JSON.stringify(productList))
+              c.pc = arr
+              channelList.push(c)
+            }
+          })
+        }
+      })
+      this.productConfigs = channelList
+      // if(this.productConfigs &&  this.productConfigs.length>0){
+      //   this.productConfigs.forEach(p=>{
+      //     channelList.forEach(t=>{
+      //       if(t.id == p.id){
+      //         p.pc.forEach(value=>{
+      //           t.pc.forEach(i=>{
+      //             if(value.value == i.value){
+      //               i.pay = value.pay
+      //               i.sale = value.sale
+      //               i.type = value.type
+      //             }
+      //           })
+      //         })
+      //       }
+      //     })
+      //   })
+      //   this.productConfigs = channelList
+      // }else{
+      //   this.productConfigs = channelList
+      // }
+    },
+    forceUpdate(){
+      this.$forceUpdate()
+    },
+    copyObject(orig) {
+      var copy = Object.create(Object.getPrototypeOf(orig));
+      copyOwnPropertiesFrom(copy, orig);
+      return copy;
+    },
     async smallIcon(){
       var res = await findHallServiceInfos()
       this.imgList = res.data
@@ -430,6 +513,7 @@ export default {
     },
     changeID(){
       this.$forceUpdate()
+      this.clickInfo()
     },
     audit(item){
       this.open2('确定审核通过？' , item.id)
@@ -510,6 +594,9 @@ export default {
         return isJPG && isLt2M;
     },
     changeInfo(item){
+      if(!item){
+        return
+      }
       var arr = []
       for(var i = 0; i<item.length; i++){
         arr[i] = item[i][0]
@@ -527,6 +614,7 @@ export default {
           }
         }
       })
+      this.clickInfo()
     },
     numChange(){
         this.infoList.forEach(v=>{
@@ -541,6 +629,7 @@ export default {
             }
           }
         })
+        this.clickInfo()
     },
     apiGetChannelName(){
       getChannelName().then(res=>{
@@ -563,68 +652,95 @@ export default {
       this.btnss = index
     },
     itemEditDialog(){
-      this.loadingBootm = true
-      var arr = []
-      if(this.infoList.length > 0){
-        this.infoList.forEach(v=>{
-          for(var l = 0; l< this.infoArr.length; l++){
-            if(this.infoArr[l] && v.value == this.infoArr[l]){
-              arr.push(v)
+      this.$refs['ruleForm'].validate((valid) => {
+          if (valid) {
+            if(!this.imageUrl){
+              this.$message('请上传产品图片！')
+              return
             }
+            var productConfigs = []
+            this.productConfigs.forEach(v=>{
+              var obj = {}
+              obj.channelId = v.id
+              var pc = []
+              v.pc.forEach(i=>{
+                var obj2 = {}
+                obj2.num = i.num
+                obj2.pay = i.pay
+                obj2.sale = i.sale
+                obj2.ppid = i.value
+                obj2.type = i.type
+                pc.push(obj2)
+              })
+              obj.pc = pc
+              productConfigs.push(obj)
+            }) 
+            // var arr = []
+            // if(this.infoList.length > 0){
+            //   this.infoList.forEach(v=>{
+            //     for(var l = 0; l< this.infoArr.length; l++){
+            //       if(this.infoArr[l] && v.value == this.infoArr[l]){
+            //         arr.push(v)
+            //       }
+            //     }
+            //   })
+            // }
+            // if(arr.length>0){
+            //   arr.forEach(v=>{
+            //     v.productid = v.value
+            //     delete v.label
+            //     delete v.value
+            //   })
+            // }
+            var data = this.itemObj
+            data.picfilepath = this.imageUrl
+            // data.productList = arr // 原本产品去除
+            data.serviceids = this.checkList
+            // data.content = this.content
+            data.pid = this.itemID
+            data.productConfigs = productConfigs // 新改版数据
+            delete data.dateline
+            delete data.updatetime
+            delete data.topdateline
+            delete data.id
+            delete data.channelids  // 去掉选中渠道
+            delete data.productList
+            if(this.itemID){
+              updateYuyueProductInfo(data).then(res=>{
+                if(res.code == 200){
+                  this.$message({
+                    type: 'success',
+                    message: '操作成功！'
+                  })
+                  this.editDialog = false
+                }else{
+                  this.$message({
+                    type: 'error',
+                    message: res.data
+                  })
+                }
+              })
+            }else{  
+              saveYuyueProduct(data).then(res=>{
+                if(res.code == 200){
+                  this.$message({
+                    type: 'success',
+                    message: '操作成功！'
+                  })
+                  this.editDialog = false
+                }else{
+                  this.$message({
+                    type: 'error',
+                    message: res.data
+                  })
+                }
+              })
+            }
+          }else {
+            console.log('error submit!!');
+            return false;
           }
-        })
-      }
-      if(arr.length>0){
-        arr.forEach(v=>{
-          v.productid = v.value
-          delete v.label
-          delete v.value
-        })
-      }
-      this.itemObj.picfilepath = this.imageUrl
-      this.itemObj.productList = arr
-      this.itemObj.serviceids = this.checkList
-      // this.itemObj.content = this.content
-      this.itemObj.pid = this.itemID
-      delete this.itemObj.dateline
-      delete this.itemObj.updatetime
-      delete this.itemObj.topdateline
-      delete this.itemObj.id
-      // console.log(arr); // 对应产品数组
-      // console.log(this.itemObj);
-      if(this.itemID){
-        updateYuyueProductInfo(this.itemObj).then(res=>{
-          this.loadingBootm = false
-          if(res.code == 200){
-            this.$message({
-              type: 'success',
-              message: '操作成功！'
-            })
-            this.editDialog = false
-          }else{
-            this.$message({
-              type: 'error',
-              message: res.data
-            })
-          }
-        })
-      }else{  
-        saveYuyueProduct(this.itemObj).then(res=>{
-          this.loadingBootm = false
-          if(res.code == 200){
-            this.$message({
-              type: 'success',
-              message: '操作成功！'
-            })
-            this.editDialog = false
-          }else{
-            this.$message({
-              type: 'error',
-              message: res.data
-            })
-          }
-        })
-      }
+      })
     },
     onEditorBlur(editor) {
           // console.log('editor blur!', editor)
@@ -732,31 +848,64 @@ export default {
         this.checkList = ListArr
       }
       getYyProductById({id: item.id}).then(res=>{
-        var arr = []
-        if(res.data.productList){
-          res.data.productList.forEach(v=>{
-            var arrNum = Number(v.productid)
-            arr.push([v.productid])
-            this.infoList.forEach(valueId=>{
-                if(valueId.value == v.productid){
-                  if(valueId.label.indexOf("/") == -1){
-                    valueId.label = valueId.label + "/" + v.num
-                    valueId.num = v.num
-                  }else{
-                    var str = valueId.label.split('/') 
-                    valueId.label = str[0] + "/" + v.num
-                  }
-                }
-            }) 
+        // if(res.data.productList){
+        //   res.data.productList.forEach(v=>{
+        //     var arrNum = Number(v.productid)
+        //     arr.push([v.productid])
+        //     this.infoList.forEach(valueId=>{
+        //         if(valueId.value == v.productid){
+        //           if(valueId.label.indexOf("/") == -1){
+        //             valueId.label = valueId.label + "/" + v.num
+        //             valueId.num = v.num
+        //           }else{
+        //             var str = valueId.label.split('/') 
+        //             valueId.label = str[0] + "/" + v.num
+        //           }
+        //         }
+        //     }) 
+        //   })
+        // }
+        var arr = []  // 已经选中的产品id
+        var channelsArr = []  // 渠道id
+        var channelList = [] // 选中渠道和已选中的产品合并
+        if(res.data.productConfigs){
+          res.data.productConfigs[0].pc.forEach(v=>{   // 任意每一项的ppid都是一样的，所以直接取0项
+            arr.push([v.ppid])
           })
-        }
-        var channelsArr = []
-        if(res.data.channels){
-          res.data.channels.forEach(v=>{
+          res.data.productConfigs.forEach(v=>{
             var id = Number(v.channelId)
             channelsArr.push(id)
+            var obj = {}
+            obj.id = id
+            this.channelList.forEach(i=>{
+              if(i.id == id){
+                obj.name = i.name
+              }
+            })
+            var arr = []
+            v.pc.forEach(t=>{
+                  this.infoList.forEach(valueId=>{
+                    if(valueId.value == t.ppid){
+                      if(valueId.label.indexOf("/") == -1){
+                        valueId.label = valueId.label + "/" + t.num
+                        valueId.num = t.num
+                      }else{
+                        var str = valueId.label.split('/') 
+                        valueId.label = str[0] + "/" + t.num
+                        valueId.num = t.num
+                      }
+                      t.label = valueId.label
+                      t.value = t.ppid
+                      delete t.createTime
+                      arr.push(t)
+                    }
+                })
+            })
+            obj.pc = arr
+            channelList.push(obj)
           })
-        }
+        } 
+        this.productConfigs = channelList  // 初始化数据
         this.itemObj.channelids = channelsArr
         this.valueList = arr 
         this.infoArr = arr
@@ -785,8 +934,12 @@ export default {
       this.itemID = null
       this.imageUrl = ""
       this.loadingBootm = false
+      this.valueList = ""
       this.apiFindIproductInfos()
       this.checkList = []
+      this.infoList = []
+      this.infoArr = []
+      this.productConfigs = []
       this.getData()
     },
     handleFilter(){
@@ -812,6 +965,26 @@ export default {
 
 <style lang="less" scoped>
 @import "../../styles/cascader.css";
+.channel_list{
+  .price_list{
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    .price_name{
+      font-size: 16px;
+      width: 90px;
+    }
+    .input_w{
+      width: 220px !important;
+      margin: 0 12px;
+    }
+  }
+  .channel_name{
+    font-weight: bold;
+    font-size: 17px;
+  }
+}
 .img_list{
   padding: 10px;
   /deep/.el-checkbox__input{
