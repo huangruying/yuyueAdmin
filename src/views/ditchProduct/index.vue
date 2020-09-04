@@ -141,8 +141,8 @@
       </div>
       <div>
         <!-- 基本内容 -->
-        <el-divider content-position="left" v-if="btnss == 1"><span class="title">基本内容</span></el-divider>
-        <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;" v-if="btnss == 1">
+        <el-divider content-position="left" v-show="btnss == 1"><span class="title">基本内容</span></el-divider>
+        <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;" v-show="btnss == 1">
           <el-form label-position="right" ref="ruleForm" :rules="informRules" label-width="150px" :model="itemObj" class="clearFix">
               <el-form-item label="产品名称：" prop="name" style="width: 100%">
                   <el-input v-model="itemObj.name" style="width:50%" placeholder="请输入产品名称"></el-input>
@@ -240,8 +240,8 @@
           </el-form>
         </div>
         <!-- 权益介绍 -->
-        <el-divider content-position="left" v-if="btnss == 2"><span class="title">权益介绍</span></el-divider>
-         <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;" v-if="btnss == 2">
+        <el-divider content-position="left" v-show="btnss == 2"><span class="title">权益介绍</span></el-divider>
+         <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;" v-show="btnss == 2">
            <el-form label-position="right" label-width="150px" :model="itemObj" class="clearFix">
              <el-form-item label="权益简介：">
                 <div class="editorBox">
@@ -675,6 +675,13 @@ export default {
               obj.pc = pc
               productConfigs.push(obj)
             }) 
+            var channelProducts = [] 
+            productConfigs[0].pc.forEach(item=>{
+              var objNum = {}
+              objNum.ppid = item.ppid
+              objNum.num = item.num
+              channelProducts.push(objNum)
+            })
             // var arr = []
             // if(this.infoList.length > 0){
             //   this.infoList.forEach(v=>{
@@ -698,7 +705,8 @@ export default {
             data.serviceids = this.checkList
             // data.content = this.content
             data.pid = this.itemID
-            data.productConfigs = productConfigs // 新改版数据
+            data.productConfigs = productConfigs // 新改版渠道产品等数据
+            data.channelProducts = channelProducts // 产品及数量
             delete data.dateline
             delete data.updatetime
             delete data.topdateline

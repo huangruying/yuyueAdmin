@@ -398,7 +398,7 @@ export default {
         if(res.code == 200){
           this.menuList = res.data
         }else{
-          this.$message("服务器数据格出了小问题哦！")
+          this.$message("服务器数据出了小问题哦！")
         }
       })
     },
@@ -436,7 +436,7 @@ export default {
                    if(res.code == 200){
                        this.editTheNewDialog = false
                        this.$message({
-                           message: '修改成功！',
+                           message: '操作成功！',
                            type: 'success'
                        })
                    }else{
@@ -448,7 +448,7 @@ export default {
                    if(res.code == 200){
                        this.editTheNewDialog = false
                        this.$message({
-                           message: '修改成功！',
+                           message: '操作成功！',
                            type: 'success'
                        })
                    }else{

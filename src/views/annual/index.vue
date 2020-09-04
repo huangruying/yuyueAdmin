@@ -1,6 +1,6 @@
 <template>
   <div class="annual">
-    <div class="noData">该功能小哥哥在努力开发中...</div>
+    <div class="noData">该功能小哥哥还在努力开发中...</div>
   </div>
 </template>
 
@@ -10,7 +10,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .noData{
   margin: 30px 40px;
 }

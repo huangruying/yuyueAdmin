@@ -45,7 +45,7 @@ service.interceptors.response.use(
         type: 'error',
         duration: 5 * 1000
       })
-      return Promise.reject('error')  // 记得改回这里
+      return Promise.reject('error')  // 下方测试，记得改回这里
       // return response.data
     } else {
       return response.data

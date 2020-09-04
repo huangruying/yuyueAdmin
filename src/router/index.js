@@ -76,25 +76,25 @@ export const asyncRoutes = [
   {
     path: '/autoWash',
     component: Layout,
-    meta: { title: '车后服务管理后台', icon: 'example' , roles: ['vsadm'] },
+    meta: { title: '车后服务管理后台', icon: 'bug' , roles: ['vsadm'] },
     children: [
       {
         path: 'indent',
         component: () => import('@/views/routerView/index'), // Parent router-view
         // redirect: 'annual',
-        meta: { title: '订单管理', icon: 'example' , roles:['vsadm_serviceorder']},
+        meta: { title: '订单管理', icon: 'excel' , roles:['vsadm_serviceorder']},
         children: [
           {
             path: 'annual',
             name: 'annual',
             component: () => import('@/views/annual/index'),
-            meta: { title: '年检订单', icon: 'dashboard' , roles:['vsadm_serviceorder_yearly']}
+            meta: { title: '年检订单' , roles:['vsadm_serviceorder_yearly']}
           },
           {
             path: 'serve',
             name: 'serve',
             component: () => import('@/views/serve/index'),
-            meta: { title: '服务订单', icon: 'dashboard' , roles:['vsadm_serviceorder_order']}
+            meta: { title: '服务订单' , roles:['vsadm_serviceorder_order']}
           }
         ]
       },
@@ -108,25 +108,25 @@ export const asyncRoutes = [
             path: 'nodeList',
             name: 'nodeList',
             component: () => import('@/views/nodeList/index'),
-            meta: { title: '网点列表', icon: 'table' , roles: ['vsadm_servicer_list']}
+            meta: { title: '网点列表' , roles: ['vsadm_servicer_list']}
           },
           {
             path: 'nodeAudit',
             name: 'nodeAudit',
             component: () => import('@/views/nodeAudit/index'),
-            meta: { title: '网点审批', icon: 'table' , roles: ['vsadm_servicer_audit']}
+            meta: { title: '网点审批' , roles: ['vsadm_servicer_audit']}
           },
           {
             path: 'account',
             name: 'account',
             component: () => import('@/views/account/index'),
-            meta: { title: '网点账号管理', icon: 'table' , roles: ['vsadm_servicer_account']}
+            meta: { title: '网点账号管理' , roles: ['vsadm_servicer_account']}
           },
           {
             path: 'institution',
             name: 'institution',
             component: () => import('@/views/institution/index'),
-            meta: { title: '所属机构管理', icon: 'table' , roles: ['vsadm_servicer_mechanism']}
+            meta: { title: '所属机构管理' , roles: ['vsadm_servicer_mechanism']}
           },
         ]
       },
@@ -134,13 +134,13 @@ export const asyncRoutes = [
         path: '/basics',
         alwaysShow: true,
         component: () => import('@/views/routerView/index'), // Parent router-view
-        meta: { title: '基础数据管理', icon: 'example' , roles: ['vsadm_basedata'] },
+        meta: { title: '基础数据管理', icon: 'chart' , roles: ['vsadm_basedata'] },
         children: [
             {
               path: 'nodeService',
               name: 'nodeService',
               component: () => import('@/views/nodeService/index'),
-              meta: { title: '网点服务项管理', icon: 'table' , roles: ['vsadm_servicer_list']}
+              meta: { title: '网点服务项管理', roles: ['vsadm_servicer_list']}
             },
         ]
       },
@@ -162,39 +162,39 @@ export const asyncRoutes = [
         path: '/volume',
         alwaysShow: true,
         component: () => import('@/views/routerView/index'), // Parent router-view
-        meta: { title: '劵码管理', icon: 'example' , roles: ['vsadm_code']},
+        meta: { title: '劵码管理', icon: 'clipboard' , roles: ['vsadm_code']},
         children: [
           {
             path: 'volumeList',
             name: 'volumeList',
             component: () => import('@/views/volumeList/index'),
-            meta: { title: '劵码列表', icon: 'table' , roles: ['vsadm_code_list']}
+            meta: { title: '劵码列表', roles: ['vsadm_code_list']}
           }
         ]
       },
       {
         path: '/priceControl',
         component: () => import('@/views/routerView/index'), // Parent router-view
-        meta: { title: '价格管理', icon: 'example' , roles: ['vsadm_price']},
+        meta: { title: '价格管理', icon: 'money' , roles: ['vsadm_price']},
         children: [
           {
             path: 'channelPrice', 
             name: 'channelPrice',
             component: () => import('@/views/channelPrice/index'),
-            meta: { title: '渠道价格', icon: 'table' , roles: ['vsadm_channel_price']}
+            meta: { title: '渠道价格' , roles: ['vsadm_channel_price']}
           },
           {
             path: 'platformPrice', 
             name: 'platformPrice',
             component: () => import('@/views/platformPrice/index'),
-            meta: { title: '平台价格', icon: 'table' , roles: ['vsadm_servicer_price']}
+            meta: { title: '平台价格' , roles: ['vsadm_servicer_price']}
           }
         ]
       },
       {
         path: '/reconciliation',
         component: () => import('@/views/routerView/index'), // Parent router-view
-        meta: { title: '对账管理', icon: 'example' , roles: ['vsadm_reconciliation']},
+        meta: { title: '对账管理', icon: 'form' , roles: ['vsadm_reconciliation']},
         children: [
           // {
           //   path: 'channel',
@@ -206,13 +206,13 @@ export const asyncRoutes = [
             path: 'nodeReconciliation',
             name: 'nodeReconciliation',
             component: () => import('@/views/nodeReconciliation/index'),
-            meta: { title: '网点对账', icon: 'table' , roles: ['vsadm_servicer_account']}
+            meta: { title: '网点对账' , roles: ['vsadm_servicer_account']}
           },
           {
             path: 'insuranceReconciliation',
             name: 'insuranceReconciliation',
             component: () => import('@/views/insuranceReconciliation/index'),
-            meta: { title: '渠道对账', icon: 'table' , roles: ['vsadm_chennel_account']}
+            meta: { title: '渠道对账' , roles: ['vsadm_chennel_account']}
           }
         ]
       },
@@ -221,37 +221,37 @@ export const asyncRoutes = [
   {
     path: '/service',
     component: Layout,
-    meta: { title: '贵宾厅管理后台', icon: 'example' , roles:  ['vipadm'] },
+    meta: { title: '贵宾厅管理后台', icon: 'tree' , roles:  ['vipadm'] },
     children: [
       {
         path: 'service',
         component: () => import('@/views/routerView/index'), // Parent router-view
-        meta: { title: '服务商', icon: 'example'},
+        meta: { title: '服务商', icon: 'people'},
         children: [
           {
             path: 'serviceProduct',
             name: 'serviceProduct',
             component: () => import('@/views/serviceProduct/index'),
-            meta: { title: '服务商产品管理', icon: 'dashboard'}
+            meta: { title: '服务商产品管理'}
           },
           {
             path: 'serviceOrder',
             name: 'serviceOrder',
             component: () => import('@/views/serviceOrder/index'),
-            meta: { title: '服务单管理', icon: 'dashboard'}
+            meta: { title: '服务单管理'}
           },
           {
             path: 'yuetuSite',
             name: 'yuetuSite',
             component: () => import('@/views/yuetuSite/index'),
-            meta: { title: '悦途站点管理', icon: 'dashboard'}
+            meta: { title: '悦途站点管理'}
           },
         ]
       },
       {
         path: 'ditch',
         component: () => import('@/views/routerView/index'), // Parent router-view
-        meta: { title: '渠道', icon: 'example'},
+        meta: { title: '渠道', icon: 'international'},
         children: [
           // {  贵宾厅与洗车渠道已合并，页面依然保留，日后有需要可打开！
           //   path: 'ditchChannel',
@@ -263,26 +263,26 @@ export const asyncRoutes = [
             path: 'ditchProduct',
             name: 'ditchProduct',
             component: () => import('@/views/ditchProduct/index'),
-            meta: { title: '渠道产品管理', icon: 'dashboard' ,}
+            meta: { title: '渠道产品管理'}
           },
           {
             path: 'ditchOrder',
             name: 'ditchOrder',
             component: () => import('@/views/ditchOrder/index'),
-            meta: { title: ' 渠道订单管理', icon: 'dashboard' ,}
+            meta: { title: ' 渠道订单管理'}
           },
         ]
       },
       {
         path: 'marketing',
         component: () => import('@/views/routerView/index'), // Parent router-view
-        meta: { title: '营销工具', icon: 'example'},
+        meta: { title: '营销工具', icon: 'tree-table'},
         children: [
           {
             path: 'marketingCoupon',
             name: 'marketingCoupon',
             component: () => import('@/views/routerView/index'),
-            meta: { title: '优惠券管理', icon: 'dashboard'},
+            meta: { title: '优惠券管理', icon: 'skill'},
             children: [
               {
                 path: 'marketingList',
@@ -302,7 +302,7 @@ export const asyncRoutes = [
             path: 'marketingCertificate',
             name: 'marketingCertificate',
             component: () => import('@/views/routerView/index'),
-            meta: { title: '兑换券管理', icon: 'dashboard'},
+            meta: { title: '兑换券管理', icon: 'documentation'},
             children: [
               {
                 path: 'marketingConvert',
@@ -329,7 +329,7 @@ export const asyncRoutes = [
             path: 'giveCard',
             name: 'giveCard',
             component: () => import('@/views/giveCard/index'),
-            meta: { title: '发放会员卡', icon: 'dashboard'}
+            meta: { title: '发放会员卡', icon: 'qq'}
           }
         ]
       },
@@ -337,7 +337,7 @@ export const asyncRoutes = [
         path: 'WxDeploy',
         component: () => import('@/views/routerView/index'), // Parent router-view
         alwaysShow: true,
-        meta: { title: '微信配置', icon: 'example'},
+        meta: { title: '微信配置', icon: 'wechat'},
         children: [
           // {
           //   path: 'WxBasic',
@@ -349,13 +349,13 @@ export const asyncRoutes = [
             path: 'WxMenu',
             name: 'WxMenu',
             component: () => import('@/views/WxMenu/index'),
-            meta: { title: '自定义菜单', icon: 'dashboard' ,}
+            meta: { title: '自定义菜单'}
           },
           {
             path: 'WxProductList',
             name: 'WxProductList',
             component: () => import('@/views/WxProductList/index'),
-            meta: { title: '微信产品管理', icon: 'dashboard' ,}
+            meta: { title: '微信产品管理'}
           },
           // {
           //   path: 'WxNews',
@@ -380,16 +380,48 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/ticket',
+    component: Layout,
+    alwaysShow: true, // 日后可能会有新页面，保留侧边栏下拉
+    meta: { title: '票务', icon: 'clipboard' , roles:  ['ticketService'] },
+    children: [
+      {
+        path: '/ticketService',
+        name: 'ticketService',
+        component: () => import('@/views/ticketService/index'),
+        meta: { title: '票务', icon: 'edit' },
+      },
+      {
+        path: '/orderTicket',
+        name: 'orderTicket',
+        component: () => import('@/views/orderTicket/index'),
+        meta: { title: '定票订单', icon: 'skill' },
+      },
+      {
+        path: '/stationList',
+        name: 'stationList',
+        component: () => import('@/views/stationList/index'),
+        meta: { title: '车站列表', icon: 'edit' }
+      },
+      {
+        path: '/stationPrice',
+        name: 'stationPrice',
+        component: () => import('@/views/stationPrice/index'),
+        meta: { title: '车站价格列表', icon: 'edit' }
+      },
+    ]
+  },
+  {
     path: '/channel',
     component: Layout,
     alwaysShow: true, // 日后可能会有新页面，保留侧边栏下拉，权限和用户管理保留一致
-    meta: { title: '渠道管理', icon: 'example' , roles:  ['channeladm'] },
+    meta: { title: '渠道管理', icon: 'international' , roles:  ['channeladm'] },
     children: [
       {
         path: 'channel',
         name: 'channel',
         component: () => import('@/views/channel/index'),
-        meta: { title: '渠道管理', icon: 'table' },
+        meta: { title: '渠道管理' },
       }
     ]
   },
@@ -398,19 +430,19 @@ export const asyncRoutes = [
     component: Layout,
     alwaysShow: true,
    // component: () => import('@/views/routerView/index'), // Parent router-view
-    meta: { title: '用户管理', icon: 'example' , roles:  ['permissionadm'] },
+    meta: { title: '用户管理', icon: 'user' , roles:  ['permissionadm'] },
     children: [
       {
         path: '/userList',
         name: 'userList',
         component: () => import('@/views/userList/index'),
-        meta: { title: '后台用户列表'}
+        meta: { title: '后台用户列表', icon: '404'}
       },
       {
         path: '/userWxList',
         name: 'userWxList',
         component: () => import('@/views/userWxList/index'),
-        meta: { title: '微信用户列表'}
+        meta: { title: '微信用户列表', icon: 'wechat'}
       },
     ]
   },
@@ -418,13 +450,13 @@ export const asyncRoutes = [
     path: '/authority',
     component: Layout,
     alwaysShow: true,
-    meta: { title: '权限管理', icon: 'example' , roles:  ['permissionadm'] },
+    meta: { title: '权限管理', icon: 'lock' , roles:  ['permissionadm'] },
     children: [
       {
         path: '/authorityList',
         name: 'authorityList',
         component: () => import('@/views/authorityList/index'),
-        meta: { title: '角色管理'}
+        meta: { title: '角色管理', icon: 'message'}
       }
     ]
   },

@@ -1,5 +1,5 @@
 <template>
-  <div class="authorityList">
+  <div class="app-container">
       <el-divider content-position="left"><span class="title">查询</span></el-divider>
       <div class="btn_box">
           <div>
@@ -408,11 +408,16 @@ export default {
 .flex_item{
     display: flex;
 }
+/deep/.el-divider--horizontal{
+  margin: 0;
+}
 .btn_box{
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px 20px 0;
+  border: 1px solid #DCDFE6;
+  border-top: none;
   >div{
       padding: 0 40px;
       margin-bottom: 20px;

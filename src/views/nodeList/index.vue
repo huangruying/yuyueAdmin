@@ -660,7 +660,7 @@ export default {
           storePhone: [
             { required: true, message: '经理/店长手机号码不能为空', trigger: 'blur' }
           ],
-          dotAddress: [
+          address: [
             { required: true, message: '网点地址不能为空', trigger: 'blur' }
           ],
           recommender: [
@@ -1029,7 +1029,7 @@ export default {
       if (filter && this.data.current_page > 1) {
         data.page = this.data.current_page;
       } else {
-        this.data.current_page = 1;
+        this.data.current_page = 1
       }
       if (queryList.time[0] && queryList.time[1]) {
         data.startTime = queryList.time[0]

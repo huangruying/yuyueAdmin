@@ -560,6 +560,13 @@ export default {
       this.visibleLobby = true
       this.getList()
     },
+    getImage(url){
+      // console.log(url);
+      // 把现在的图片连接传进来，返回一个不受限制的路径
+      if(url !== undefined){
+        return url.replace(/^(http)[s]*(\:\/\/)/,'https://images.weserv.nl/?url=');
+      }
+    },
     getList(filter){
       this.dialogLoading = true
       var data = {}
@@ -585,9 +592,11 @@ export default {
           this.lobbyData.total = res.total
           this.lobbyData.data.forEach(v=>{
             if(v.hallPic.indexOf(",") == -1){
-              v.hallPic = v.hallPic
+              v.hallPic = this.getImage(v.hallPic)
+              // v.hallPic = v.hallPic
             }else{
-              v.hallPic = v.hallPic.split(",")[0]
+              v.hallPic = this.getImage(v.hallPic.split(",")[0])
+              // v.hallPic = v.hallPic.split(",")[0]
             }
             if(v.hallStatus == 1){
               v.hallStatus = "正常"
