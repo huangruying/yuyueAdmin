@@ -16,7 +16,8 @@ const mutations = {
     state.data = {}
     state.name = ''
     state.avatar = ''
-    // state.roles = []
+    state.roles = []
+    state.menus = []
     removeToken()
     localStorage.removeItem('data')
     // Object.assign(state, getDefaultState())
@@ -74,8 +75,6 @@ const actions = {
       //     commit('MENUS', res)
       // 下面有收括号
 
-
-
       var obj = localStorage.getItem('data')
       var obj = JSON.parse(obj)
       // console.log(obj);
@@ -85,7 +84,9 @@ const actions = {
         avatar: obj.pic
       }
       const { roles, name, avatar , Authorization } = data
+      commit('MENUS', roles)
       commit('SET_ROLES', roles)
+      // commit('SET_ROLES', [])
       commit('SET_NAME', name)
       commit('SET_AVATAR', avatar)
       resolve(data)

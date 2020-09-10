@@ -30,7 +30,7 @@
       <el-table-column label="权限集合" prop="rolePermissions" align="center">
             <!-- <div v-for="(value,index) in scope.row.userRoles" :key="index">{{ value.roleDesc }}</div> -->
             <template slot-scope="scope">
-                <div v-for="(value,index) in scope.row.rolePermissions" :key="index" class="item_pop">
+                <div v-for="(value,index) in scope.row.rolePermissions" :key="index" class="item_pop" v-show="scope.row.id !== 1">
                     <el-popover trigger="hover" placement="top" :disabled="value.children? false: true">
                         <div v-for="item in value.children" :key="item.id" v-show="value.children" class="flex_item">{{ item.name }} >  <spanText v-if="item.children && item.children.length>0" :listData.sync="item.children"></spanText></div>
                         <div slot="reference" class="name-wrapper">
@@ -42,8 +42,8 @@
       </el-table-column>
       <el-table-column label="操作" width="200" fixed="right" prop="audit_status" align="center">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" @click="compile(scope.row)" v-if="scope.row.roleName !== 'admin'">编辑</el-button>
-          <el-tooltip class="item" effect="dark" content="仅删除所有权限集合" placement="top" v-if="scope.row.rolePermissions && scope.row.rolePermissions.length>0">
+          <el-button size="mini" type="primary" @click="compile(scope.row)" v-if="scope.row.id !== 1">编辑</el-button>
+          <el-tooltip class="item" effect="dark" content="仅删除所有权限集合" placement="top" v-if="scope.row.rolePermissions && scope.row.rolePermissions.length>0 && scope.row.id !== 1">
               <el-button size="mini" type="danger" @click="remove(scope.row)">删除</el-button>
           </el-tooltip>
         </template>

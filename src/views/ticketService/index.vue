@@ -6,13 +6,13 @@
                  <el-date-picker type="date" :picker-options="pickerOptions" value-format="yyyy-MM-dd" @change="changedates" placeholder="请选择出发日期" v-model="ruleForm.bookingDate" style="width: 400px;"></el-date-picker>
             </el-form-item>
             <el-form-item label="去程出发站" prop="fromId">
-                <el-select v-model="ruleForm.fromId" placeholder="请选择或输入去程出发站" filterable clearable style="width: 400px;">
+                <el-select v-model="ruleForm.fromId" placeholder="请选择或输入去程出发站" filterable clearable style="width: 400px;" @change="ttChange">
                     <el-option :label="value.name" :value="value.id" v-for="(value,index) in ttList" :key="index"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="去程到达站" prop="toId">
-                <el-select v-model="ruleForm.toId" placeholder="请选择或输入去程到达站" filterable clearable style="width: 400px;">
-                    <el-option :label="value.name" :value="value.id" v-for="(value,index) in ttList" :key="index"></el-option>
+                <el-select v-model="ruleForm.toId" placeholder="请选择或输入去程到达站" filterable clearable style="width: 400px;" @change="forcedata">
+                    <el-option :label="value.name" :value="value.id" v-for="(value,index) in ttSList" :key="index"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="去程优先乘车时间段" prop="bookingTime"> 
@@ -36,9 +36,9 @@
                 <el-select v-model="ruleForm.seatLevel" placeholder="请选择坐席" style="width: 400px;">
                     <el-option
                         v-for="item in seatList"
-                        :key="item.id"
-                        :label="item.value"
-                        :value="item.id">
+                        :key="item.seatLevel"
+                        :label="item.name"
+                        :value="item.seatLevel">
                     </el-option>
                 </el-select>
             </el-form-item>
@@ -170,7 +170,7 @@
 
 <script>
 import formatTime from "@/utils/formatTime"
-import { getTTStation, preAddTTPassenger, addTTPassenger, getAvailableTime } from "@/api/ticket/ticketService"
+import { getTTStation, preAddTTPassenger, addTTPassenger, getAvailableTime, getSeatLeavelPriceByIdAndEid, getTTStationByNotInId } from "@/api/ticket/ticketService"
 export default {
     data(){
         const that = this
@@ -194,6 +194,7 @@ export default {
                 needQuick: 0,
                 needWaiting: 0,
                 needBack: 0,
+                toId: "",
                 ttPassengerList: [
                     {
                         name: "",
@@ -257,38 +258,38 @@ export default {
                 }
             ],
             seatList: [ 
-                {
-                    value: "硬座",
-                    id: 1
-                },
-                {
-                    value: "软座",
-                    id: 2
-                },
-                {
-                    value: "硬卧",
-                    id: 3
-                },
-                {
-                    value: "软卧",
-                    id: 4
-                },
-                {
-                    value: "二等座",
-                    id: 11
-                },
-                {
-                    value: "一等座",
-                    id: 12
-                },
-                {
-                    value: "特等座",
-                    id: 13
-                },
-                {
-                    value: "商务座",
-                    id: 14
-                }
+                // {
+                //     value: "硬座",
+                //     id: 1
+                // },
+                // {
+                //     value: "软座",
+                //     id: 2
+                // },
+                // {
+                //     value: "硬卧",
+                //     id: 3
+                // },
+                // {
+                //     value: "软卧",
+                //     id: 4
+                // },
+                // {
+                //     value: "二等座",
+                //     id: 11
+                // },
+                // {
+                //     value: "一等座",
+                //     id: 12
+                // },
+                // {
+                //     value: "特等座",
+                //     id: 13
+                // },
+                // {
+                //     value: "商务座",
+                //     id: 14
+                // }
             ],
             timeList: [
               { text: '09:00-12:00', value: 1 },
@@ -312,6 +313,7 @@ export default {
                 //  { text: '21:00-24:00', value: 5 }
             ],
             ttList: [],
+            ttSList: [],
             fromIdText: "",
             toIdText: "",
             price: "",
@@ -468,6 +470,38 @@ export default {
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();
+      },
+      ttChange(){
+          getTTStationByNotInId({
+              id: this.ruleForm.fromId
+          }).then(res=>{
+              if(res.code == 200){
+                  this.ttSList = res.data
+              }else{
+                  this.$message(res.msg)
+              }
+          })
+          if(this.ruleForm.toId){
+              this.ruleForm.toId = ""
+          }
+      },
+      getSeatLeavelPrice(){
+          getSeatLeavelPriceByIdAndEid({
+              id: this.ruleForm.fromId,
+              eid: this.ruleForm.toId
+          }).then(res=>{
+              if(res.code == 200){
+                  this.seatList = res.data
+              }else{
+                  this.$message(res.msg)
+              }
+          })
+      },
+      forcedata(){
+          this.$forceUpdate()
+          if(this.ruleForm.toId){
+             this.getSeatLeavelPrice() 
+          }
       }
     }
 }

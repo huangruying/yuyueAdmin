@@ -157,7 +157,7 @@
       </el-table-column>
       <el-table-column label="操作" width="180" fixed="right" prop="audit_status" align="center">
         <template slot-scope="scope">
-           <el-button size="mini" type="primary">查看</el-button>
+           <el-button size="mini" type="primary" @click="lookData(scope.row)">查看</el-button>
         </template>
       </el-table-column>  
     </el-table>
@@ -169,12 +169,92 @@
       @pagination="getPageData"
     />
 
-
+    <!-- 查看 -->
+    <el-dialog
+      :title="dialogTitle"
+      :close-on-click-modal="false"
+      :visible.sync="editDialog"
+      width="60%"
+      @close="close"
+      center>
+        <el-divider content-position="left"><span class="title">基本信息</span></el-divider>
+        <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;">
+          <el-form label-position="right" ref="ruleForm" label-width="150px" :model="itemList" class="clearFix">
+              <el-form-item label="出发站：" prop="from_id" style="width: 100%">
+                  <el-input v-model="itemList.from_id" style="width:50%" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="到达站：" prop="to_id" style="width: 100%">
+                  <el-input v-model="itemList.to_id" style="width:50%" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="出发日期：" prop="booking_date" style="width: 100%">
+                  <el-input v-model="itemList.booking_date" style="width:50%" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="坐席：" prop="seat_levelCopy" style="width: 100%">
+                  <el-input v-model="itemList.seat_levelCopy" style="width:50%" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="联系人：" prop="user_id" style="width: 100%">
+                  <el-input v-model="itemList.user_id" style="width:50%" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="联系电话：" prop="phone" style="width: 100%">
+                  <el-input v-model="itemList.phone" style="width:50%" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="订单类别：" prop="need_back" style="width: 100%">
+                  <el-input v-model="itemList.need_back" style="width:50%" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="订单状态：" prop="status" style="width: 100%">
+                  <el-input v-model="itemList.status" style="width:50%" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="价格：" prop="amount" style="width: 100%">
+                  <el-input v-model="itemList.amount" style="width:50%" disabled></el-input>
+              </el-form-item>
+          </el-form>
+        </div>
+        <el-divider content-position="left"><span class="title">乘客详情</span></el-divider>
+        <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;">
+            <el-table
+              :data="itemObj.ttPassengerList"
+              border
+              stripe
+              fit
+              :row-class-name="tableRowClassName"
+              style="width: 100%;">
+              <el-table-column width="70" label="序号" type="index" align="center"></el-table-column>
+              <el-table-column label="姓名" prop="name" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.name }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="证件类型" prop="idtype" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.idtypeCopy }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="证件号" prop="idno" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.idno }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="手机号" prop="mobile" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.mobile }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="车票类别" prop="type" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.typeCopy }}</span>
+                </template>
+              </el-table-column>
+            </el-table>
+        </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="editDialog = false">返 回</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getTTOrderList, exportTTOrderList } from "@/api/ticket/orderTicket"
+import { getTTOrderList, exportTTOrderList, getTTOrderDetail } from "@/api/ticket/orderTicket"
 import Pagination from "@/components/Pagination"
 import { export_txt_to_zip } from "@/vendor/Export2Zip.js"
 import { baseUrl } from '@/utils/baseUrl'
@@ -184,6 +264,10 @@ export default {
   },
   data() {
     return {
+      dialogTitle: "查看",
+      itemObj: {},
+      itemList: {},
+      editDialog: false,
       bookingDateOptions: {
           disabledDate(time) {
             // return time.getTime() > Date.now();
@@ -328,11 +412,37 @@ export default {
          return
        }
        window.location.href = `${baseUrl}/tt/exportTTOrderList?bookingDate=${this.queryList.bookingDate}`
-      //  var formData = new FormData()
-      //  formData.append('bookingDate', this.queryList.bookingDate)
-      //  exportTTOrderList({bookingDate: this.queryList.bookingDate}).then(res=>{
-      //  }).catch((err) => {
-      //  })
+    },
+    lookData(item){
+      this.editDialog = true
+      this.itemList = item
+      getTTOrderDetail({id: item.id}).then(res=>{
+        this.itemObj = res.data[0]
+        this.itemObj.ttPassengerList.map(v=>{
+          if(v.idtype == 1){
+            v.idtypeCopy = "身份证"
+          }else if(v.idtype == 2){
+            v.idtypeCopy = "护照"
+          }else if(v.idtype == 3){
+            v.idtypeCopy = "港澳通行证"
+          }else if(v.idtype == 4){
+            v.idtypeCopy = "台湾通行证"
+          }
+          if(v.type == 1){
+            v.typeCopy = "成人票"
+          }else if(v.type == 2){
+            v.typeCopy = "儿童票"
+          }else if(v.type == 3){
+            v.typeCopy = "学生票"
+          }else if(v.type == 4){
+            v.typeCopy = "残军票"
+          }
+        })
+      })
+    },
+    close(){
+      this.itemObj = {}
+      this.itemList = {}
     },
     getData(filter){
     //   this.loading = true

@@ -81,7 +81,7 @@
         <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;">
           <div class="roles_list">
               <div class="qin">请选择用户角色</div>
-              <el-radio-group v-model="rolesList">
+              <el-radio-group v-model="rolesList" :disabled="disabledAdmin">
                 <el-radio :label="item.roleId" v-for="(item,index) in rolesListCon" :key="index">{{item.roleDesc}}</el-radio>
               </el-radio-group>
           </div>
@@ -107,6 +107,7 @@ export default {
             loading: false,
             loadingBtn: false,
             innerVisible: false,
+            disabledAdmin: false,
             lobbyObj: {},
             data: {
                 current_page: 1,
@@ -210,6 +211,11 @@ export default {
             });
         },
         compile(item){
+            // if(item.userRole.roleId ==1){
+            //     this.disabledAdmin = true
+            // }else{
+            //   this.disabledAdmin = false
+            // }
             this.itemId = item.id
             this.textInner = "编辑信息"
             this.innerVisible = true

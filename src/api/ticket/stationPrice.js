@@ -15,3 +15,35 @@ export function getTTStationByIdNotIn(params) {
       data: params
     })
 }
+
+export function addTTTicketPrice(params) {
+  return request({
+    url: '/tt/addTTTicketPrice',
+    method: 'post',
+    data: params
+  })
+}
+
+export function delTTTicketByStationId(params) {
+  return request({
+    url: '/tt/delTTTicketByStationId',
+    method: 'post',
+    data: params
+  })
+}
+
+export function getTTicketPriceById(params) {
+  return request({
+    url: '/tt/getTTTicketPriceById',
+    method: 'post',
+    data: params
+  })
+}
+
+export function updTTTicketByStationId(params) {
+  return request({
+    url: '/tt/updTTTicketByStationId',
+    method: 'post',
+    data: params
+  })
+}

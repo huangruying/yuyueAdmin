@@ -15,3 +15,11 @@ export function exportTTOrderList(data) {
     params: data
   })
 }
+
+export function getTTOrderDetail(params) {
+  return request({
+    url: '/tt/getTTOrderDetail',
+    method: 'post',
+    data: params
+  })
+}

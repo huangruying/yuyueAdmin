@@ -9,7 +9,7 @@ import getPageTitle from '@/utils/get-page-title'
 const _import = require('./router/_import_' + process.env.NODE_ENV)
 // const _import = require('./router/_import_production')
 import Layout from '@/layout'
-import routerview from './views/routerView'
+import routerview from '@/views/routerView'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -36,7 +36,8 @@ router.beforeEach(async(to, from, next) => {
       
       // debugger
       // 确定用户是否通过getInfo获得了他的权限角色
-      const hasRoles = store.getters.roles && store.getters.roles.length > 0
+      // const hasRoles = store.getters.roles && store.getters.roles.length > 0
+      const hasRoles = store.getters.menus && store.getters.menus.length > 0
       
       if (hasRoles) {
         next()
@@ -44,21 +45,22 @@ router.beforeEach(async(to, from, next) => {
         try {
           // 登录后获取用户角色
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
-          const { roles } = await store.dispatch('user/getInfo')
+          // const { roles } = await store.dispatch('user/getInfo')
           // // 根据角色遍历出来对应可以显示的路由
-          const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
-          // 通过addRoutes加载路由
-          router.addRoutes(accessRoutes)
+          // const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
+          // // 通过addRoutes加载路由
+          // router.addRoutes(accessRoutes)
 
-          // await store.dispatch('user/getInfo')
-          // if (store.getters.menus.length < 1) {
-          //   //  global.antRouter = []
-          //     store.getters.menus = []
-          //     next()
-          // }
-          // const menus = await filterAsyncRouter(store.getters.menus) // 1.过滤路由
-          // router.addRoutes(menus) // 2.动态添加路由
 
+          // 以下动态获取路由
+          await store.dispatch('user/getInfo')
+          if (store.getters.menus.length < 1) {
+            //  global.antRouter = []
+              store.getters.menus = []
+              next()
+          }
+          const menus = await filterAsyncRouter(store.getters.menus) // 1.过滤路由
+          router.addRoutes(menus) // 2.动态添加路由
           
           //  global.antRouter = menus // 3.将路由数据传递给全局变量，做侧边栏菜单渲染工作 可不要
 
@@ -97,10 +99,10 @@ function filterAsyncRouter(asyncRouterMap) {
       }else if(route.component === 'routerView'){
         route.component = routerview //历史遗留，必须有
       } else {
-        route.component = _import(route.component) // 导入组件
+        route.component = _import(route.path) // 导入组件
       }
     }
-    if (route.children && route.children.length) {
+    if (route.children && route.children.length>0) {
       route.children = filterAsyncRouter(route.children)
     }
     return true

@@ -78,7 +78,7 @@
       <el-table-column label="操作" width="180" fixed="right" prop="audit_status" align="center">
         <template slot-scope="scope">
           <el-button size="mini" type="danger" @click="remove(scope.row)">删除</el-button>
-          <el-button size="mini" type="primary" @click="compile(scope.row)">编辑</el-button>
+          <el-button size="mini" type="primary" @click="compile(scope.row)" :loading="itemLoading">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -100,20 +100,26 @@
         <el-divider content-position="left"><span class="title">基本信息</span></el-divider>
         <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;">
           <el-form label-position="right" ref="ruleForm" :rules="rules" label-width="150px" :model="itemObj" class="clearFix">
-              <el-form-item label="起点站名称：" prop="starting" style="width: 100%">
+              <el-form-item label="起点站名称：" prop="starting" style="width: 100%" v-if="!(starting && terminal)">
                 <el-select v-model="itemObj.starting" placeholder="请选择起点站名称" filterable clearable style="width: 400px;" @change="originChange">
                     <el-option :label="value.name" :value="value.id" v-for="(value,index) in ttList" :key="index"></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="终点站名称：" prop="terminal" style="width: 100%">
+              <el-form-item label="终点站名称：" prop="terminal" style="width: 100%" v-if="!(starting && terminal)">
                   <el-select v-model="itemObj.terminal" placeholder="请选择终点站名称" filterable clearable style="width: 400px;">
                     <el-option :label="value.name" :value="value.id" v-for="(value,index) in destinationList" :key="index"></el-option>
                   </el-select>
               </el-form-item>
+              <el-form-item label="起点站名称：" style="width: 100%" v-if="starting && terminal">
+                  <div style="font-size: 18px;font-weight: 600;">{{starting}}</div>
+              </el-form-item>
+              <el-form-item label="终点站名称：" style="width: 100%" v-if="starting && terminal">
+                  <div style="font-size: 18px;font-weight: 600;">{{terminal}}</div>
+              </el-form-item>
               <el-form-item label="坐席及价格填写：" prop="priceSeatLealList" style="width: 100%">
                   <el-checkbox-group v-model="itemObj.priceSeatLealList">
-                    <div class="checkbox_box" v-for="value in seatList" :key="value.id">
-                        <el-checkbox :label="value.value" :name="value.id" class="checkbox"></el-checkbox>
+                    <div class="checkbox_box" v-for="(value,index) in seatList" :key="index">
+                        <el-checkbox :label="value.id" :name="value.id" class="checkbox">{{ value.value }}</el-checkbox>
                         <el-input placeholder="请输入价格" v-model="value.price" class="checkbox_input" @input="forceUpdate" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
                     </div>
                   </el-checkbox-group>
@@ -129,7 +135,7 @@
 </template>
 
 <script>
-import { getTTTicketPriceList, getTTStationByIdNotIn } from '@/api/ticket/stationPrice'
+import { getTTTicketPriceList, getTTStationByIdNotIn, addTTTicketPrice, delTTTicketByStationId, getTTicketPriceById, updTTTicketByStationId } from '@/api/ticket/stationPrice'
 import Pagination from "@/components/Pagination"
 import { getTTStation } from "@/api/ticket/ticketService"
 export default {
@@ -138,7 +144,10 @@ export default {
   },
   data() {
     return {
+      starting: "",
+      terminal: "",
       dialogTitle: "",
+      itemLoading: false,
       disabledCity: false,
       editNewlyDialog: false,
       loadingBootm: false,
@@ -239,32 +248,49 @@ export default {
     itemDialog(){
         this.$refs["ruleForm"].validate((valid) => {
           if (valid) {
-              if(this.itemObj.id){
-                  var data = {}
-                  data.id = this.itemObj.id
-                  data.name = this.itemObj.name
-                  data.fullSpell = this.itemObj.fullSpell
-                  data.firstSpell = this.itemObj.firstSpell
-                  updTTStaion(data).then(res=>{
-                      this.editNewlyDialog = false
-                      this.$message({
-                           message: '修改成功！',
-                           type: 'success'
-                       })
-                  })
-              }else{
-                  addTTStation(this.itemObj).then(res=>{
-                  if(res.code == 200){
-                      this.editNewlyDialog = false
-                      this.$message({
-                           message: '新增成功！',
-                           type: 'success'
-                       })
+            var priceSeatLealList = []
+            this.itemObj.priceSeatLealList.forEach(v=>{
+              this.seatList.forEach(i=>{
+                if(v === i.id){
+                  var obj = {
+                    seatLevel: v,
+                    price: i.price
+                  }
+                  priceSeatLealList.push(obj)
+                }
+              })
+            })
+            var data = {}
+            data.priceSeatLealList = priceSeatLealList
+            if(this.itemObj.id){
+              data.starting = this.itemObj.id
+              data.terminal = this.itemObj.eid
+              updTTTicketByStationId(data).then(res=>{
+                if(res.code == 200){
+                    this.$message({
+                      type: "success",
+                      message: "新增成功！"
+                    })
+                    this.editNewlyDialog = false
                   }else{
-                      this.$message.error(res.msg)
+                    this.$message(res.msg)
                   }
               })
-              }
+            }else{
+               data.starting =  this.itemObj.starting
+               data.terminal =  this.itemObj.terminal
+                addTTTicketPrice(data).then(res=>{
+                  if(res.code == 200){
+                    this.$message({
+                      type: "success",
+                      message: "新增成功！"
+                    })
+                    this.editNewlyDialog = false
+                  }else{
+                    this.$message(res.msg)
+                  }
+                })
+            }
           }
         })
     },
@@ -279,11 +305,18 @@ export default {
         }
         var arr = []
         this.itemArr.forEach(v=>{
-          arr.push(v.id)
+          var obj = {}
+          obj.id = v.id
+          obj.eid = v.eid
+          arr.push(obj)
         })
         this.open('确定批量删除？' , arr)
       }else{
-        this.open('确定删除？' , [item.id])
+        var obj = {
+          id: item.id,
+          eid: item.eid
+        }
+        this.open('确定删除？' , [obj])
       }
     },
     open(text,id) {
@@ -293,7 +326,7 @@ export default {
           type: 'warning'
         }).then(() => {
           this.loading = true
-          delTTStaion({ids: id}).then(res=>{
+          delTTTicketByStationId({ids: id}).then(res=>{
             if(res.code == 200){
               this.$message({
                 type: 'success',
@@ -361,7 +394,12 @@ export default {
       this.itemObj = {
         priceSeatLealList: []
       }
-      this.disabledCity = false
+      this.seatList.map(v=>{
+        v.price = ""
+      })
+      this.$refs['ruleForm'].resetFields()
+      this.starting = ""
+      this.terminal = ""
       this.loadingBootm = false
       this.getData()
     },
@@ -370,14 +408,39 @@ export default {
         this.dialogTitle = "新增车站"
     },
     compile(item){
-        item.cityId = String(item.cityId)
-        item.provinceId = String(item.provinceId)
-        item.areaId = String(item.areaId)
-        this.itemObj = item
-        this.editNewlyDialog = true
-        this.disabledCity = true
-        this.dialogTitle = "编辑车站"
-        this.changeCity(item.provinceId,1)
+        this.itemLoading = true
+        var data = {}
+        data.id = item.id
+        data.eid = item.eid
+        this.starting = item.startName
+        this.terminal = item.endName
+        getTTicketPriceById({
+          id: item.id,
+          eid: item.eid
+        }).then(res=>{
+          if(res.code == 200){
+              var arr = []
+              res.data.forEach(v=>{
+                  var id = String(v.seatLevel)
+                  arr.push(id)
+              })
+              this.seatList.map(i=>{
+                res.data.forEach(v=>{
+                  if(v.seatLevel == i.id){
+                    i.price = v.price
+                  }
+                })
+              })
+              data.priceSeatLealList = arr
+              this.itemObj = data
+              this.editNewlyDialog = true
+              this.dialogTitle = "编辑车站"
+              this.itemLoading = false
+          }else{
+            this.itemLoading = false
+            this.$message(res.msg)
+          }
+        })
     },
     handleFilter(){
       this.getData()

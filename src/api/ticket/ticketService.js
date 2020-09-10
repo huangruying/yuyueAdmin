@@ -31,3 +31,19 @@ export function addTTPassenger(data) {
       params: data
     })
  }
+
+ export function getTTStationByNotInId(data) {
+  return request({
+    url: '/tt/getTTStationByNotInId',
+    method: 'post',
+    data: data
+  })
+}
+
+export function getSeatLeavelPriceByIdAndEid(data) {
+  return request({
+    url: '/tt/getSeatLeavelPriceByIdAndEid',
+    method: 'post',
+    data: data
+  })
+}
