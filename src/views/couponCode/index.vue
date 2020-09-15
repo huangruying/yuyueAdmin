@@ -306,6 +306,7 @@
            <el-button type="primary" icon="el-icon-search" @click="look(obj)">搜索</el-button>
          </div>
          <div>
+           <el-button type="primary" @click="exportDataList">下载模板</el-button>
            <el-button type="primary" icon="el-icon-refresh" @click="resetGetData2(obj)"></el-button>
          </div>
        </div>
@@ -690,6 +691,9 @@ export default {
     },
     educe(item){
       window.location.href = `${baseUrl}/wash/coupon/exportCouponCode?couponId=${item.couponId}&batchId=${item.id}`
+    },
+    exportDataList() {
+      window.location.href = `https://dot-bucket.oss-cn-shenzhen.aliyuncs.com/static/couponexceldemo.xlsx`;
     },
     exportData2(item){
       if(this.dialog.data.length <= 0){

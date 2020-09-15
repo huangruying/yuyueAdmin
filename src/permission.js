@@ -62,7 +62,7 @@ router.beforeEach(async(to, from, next) => {
           const menus = await filterAsyncRouter(store.getters.menus) // 1.过滤路由
           router.addRoutes(menus) // 2.动态添加路由
           
-          //  global.antRouter = menus // 3.将路由数据传递给全局变量，做侧边栏菜单渲染工作 可不要
+           global.antRouter = menus // 3.将路由数据传递给全局变量，做侧边栏菜单渲染工作 可不要
 
           // hack方法 确保addRoutes已完成 ,set the replace
           next({ ...to, replace: true })

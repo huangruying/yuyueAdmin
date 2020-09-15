@@ -23,3 +23,11 @@ export function getTTOrderDetail(params) {
     data: params
   })
 }
+
+export function updateTT(params) {
+  return request({
+    url: '/tt/updateTT',
+    method: 'post',
+    data: params
+  })
+}

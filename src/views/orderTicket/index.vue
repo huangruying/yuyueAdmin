@@ -63,6 +63,7 @@
        </div> 
        <div class="btn_box">
          <div>
+           <el-button type="primary" @click="alterStatus">修改订单状态</el-button>
            <el-button type="primary" icon="el-icon-search" @click="getData">搜索</el-button>
            <el-button type="primary" @click="reset">重置</el-button>
          </div>
@@ -78,7 +79,9 @@
       border
       stripe
       fit
+      @selection-change="handleSelectionChange"
       style="width: 100%;">
+      <el-table-column align="center" type="selection" width="50"></el-table-column>
       <el-table-column width="70" label="序号" type="index" align="center"></el-table-column>
       <el-table-column label="订单ID" prop="orderno" align="center" width="160px">
         <template slot-scope="scope">
@@ -250,11 +253,32 @@
         <el-button type="primary" @click="editDialog = false">返 回</el-button>
       </span>
     </el-dialog>
+    <!-- 修改状态 -->
+    <el-dialog
+      title="修改状态"
+      :visible.sync="dialogStatus"
+      width="30%">
+      <div class="status">
+        <span>订单状态:</span>
+        <el-select v-model="status" placeholder="请选择订单状态">
+              <el-option
+              v-for="item in statusList"
+              :label="item.value"
+              :value="item.id"
+              :key="item.id"
+              ></el-option>
+        </el-select>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogStatus = false">取 消</el-button>
+        <el-button type="primary" @click="confirmStatus">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getTTOrderList, exportTTOrderList, getTTOrderDetail } from "@/api/ticket/orderTicket"
+import { getTTOrderList, exportTTOrderList, getTTOrderDetail, updateTT } from "@/api/ticket/orderTicket"
 import Pagination from "@/components/Pagination"
 import { export_txt_to_zip } from "@/vendor/Export2Zip.js"
 import { baseUrl } from '@/utils/baseUrl'
@@ -264,10 +288,14 @@ export default {
   },
   data() {
     return {
+      status: "",
       dialogTitle: "查看",
       itemObj: {},
       itemList: {},
+      itemArr: [],
+      idsArr: [],
       editDialog: false,
+      dialogStatus: false,
       bookingDateOptions: {
           disabledDate(time) {
             // return time.getTime() > Date.now();
@@ -398,6 +426,45 @@ export default {
     this.getData()
   },
   methods: {
+    handleSelectionChange(val) {
+        this.itemArr = val
+    },
+    confirmStatus(){
+      if(!this.status){
+        this.$message({
+          type: 'info',
+          message: '请选择要修改的状态！'
+        })
+        return
+      }
+      updateTT({ids: this.idsArr, status: this.status}).then(res=>{
+        if(res.code == 200){
+          this.$message({
+            type: 'succuss',
+            message: "操作成功！"
+          })
+          this.dialogStatus = false
+          this.getData()
+        }else{
+          this.$message(res.msg)
+        }
+      })
+    },
+    alterStatus(){
+      if(this.itemArr.length == 0){
+        this.$message({
+          type: 'info',
+          message: '请选择数据！'
+        })
+        return
+      }
+      var arr = []
+      this.itemArr.forEach(v=>{
+        arr.push(v.id)
+      })
+      this.idsArr = arr
+      this.dialogStatus = true
+    },
     tableRowClassName({row, rowIndex}) {
         if (rowIndex === 0) {
           return 'warning-row';
@@ -520,6 +587,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.status{
+  display: flex;
+  align-items: center;
+}
 /deep/.el-date-editor .el-range-input{
   width: auto;
 }
