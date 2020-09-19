@@ -102,12 +102,12 @@
           <el-form label-position="right" ref="ruleForm" :rules="rules" label-width="150px" :model="itemObj" class="clearFix">
               <el-form-item label="起点站名称：" prop="starting" style="width: 100%" v-if="!(starting && terminal)">
                 <el-select v-model="itemObj.starting" placeholder="请选择起点站名称" filterable clearable style="width: 400px;" @change="originChange">
-                    <el-option :label="value.name" :value="value.id" v-for="(value,index) in ttList" :key="index"></el-option>
+                    <el-option :label="value.name" :value="value.name" v-for="(value,index) in ttList" :key="index"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="终点站名称：" prop="terminal" style="width: 100%" v-if="!(starting && terminal)">
-                  <el-select v-model="itemObj.terminal" placeholder="请选择终点站名称" filterable clearable style="width: 400px;">
-                    <el-option :label="value.name" :value="value.id" v-for="(value,index) in destinationList" :key="index"></el-option>
+                  <el-select v-model="itemObj.terminal" placeholder="请选择终点站名称" filterable clearable style="width: 400px;" @change="forUpdate">
+                    <el-option :label="value.name" :value="value.name" v-for="(value,index) in destinationList" :key="index"></el-option>
                   </el-select>
               </el-form-item>
               <el-form-item label="起点站名称：" style="width: 100%" v-if="starting && terminal">
@@ -154,7 +154,8 @@ export default {
       loading: false,
       itemArr: [],
       itemObj: {
-          priceSeatLealList: []
+          priceSeatLealList: [],
+          terminal: ""
       },
       rules: {
           starting: [
@@ -238,8 +239,9 @@ export default {
         })
     },
     originChange(){
-        getTTStationByIdNotIn({id: this.itemObj.starting}).then(res=>{
+        getTTStationByIdNotIn({name: this.itemObj.starting}).then(res=>{
             this.destinationList = res.data
+            this.itemObj.terminal = ""
         })
     },
     handleSelectionChange(val) {
@@ -263,8 +265,8 @@ export default {
             var data = {}
             data.priceSeatLealList = priceSeatLealList
             if(this.itemObj.id){
-              data.starting = this.itemObj.id
-              data.terminal = this.itemObj.eid
+              data.starting = this.starting
+              data.terminal = this.terminal
               updTTTicketByStationId(data).then(res=>{
                 if(res.code == 200){
                     this.$message({
@@ -306,15 +308,15 @@ export default {
         var arr = []
         this.itemArr.forEach(v=>{
           var obj = {}
-          obj.id = v.id
-          obj.eid = v.eid
+          obj.id = v.startName
+          obj.eid = v.endName
           arr.push(obj)
         })
         this.open('确定批量删除？' , arr)
       }else{
         var obj = {
-          id: item.id,
-          eid: item.eid
+          id: item.startName,
+          eid: item.endName
         }
         this.open('确定删除？' , [obj])
       }
@@ -392,7 +394,8 @@ export default {
     },
     close(){
       this.itemObj = {
-        priceSeatLealList: []
+        priceSeatLealList: [],
+        terminal: ""
       }
       this.seatList.map(v=>{
         v.price = ""
@@ -411,12 +414,12 @@ export default {
         this.itemLoading = true
         var data = {}
         data.id = item.id
-        data.eid = item.eid
+        // data.eid = item.eid
         this.starting = item.startName
         this.terminal = item.endName
         getTTicketPriceById({
-          id: item.id,
-          eid: item.eid
+          startName: item.startName,
+          endName: item.endName
         }).then(res=>{
           if(res.code == 200){
               var arr = []
@@ -447,6 +450,9 @@ export default {
     },
     forceUpdate(){
         this.$forceUpdate()
+    },
+    forUpdate(){
+      this.$forceUpdate()
     },
     getPageData(e) {
       this.getData("page");

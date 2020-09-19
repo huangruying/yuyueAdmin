@@ -7,12 +7,12 @@
             </el-form-item>
             <el-form-item label="去程出发站" prop="fromId">
                 <el-select v-model="ruleForm.fromId" placeholder="请选择或输入去程出发站" filterable clearable style="width: 400px;" @change="ttChange">
-                    <el-option :label="value.name" :value="value.id" v-for="(value,index) in ttList" :key="index"></el-option>
+                    <el-option :label="value.name" :value="value.name" v-for="(value,index) in ttList" :key="index"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="去程到达站" prop="toId">
                 <el-select v-model="ruleForm.toId" placeholder="请选择或输入去程到达站" filterable clearable style="width: 400px;" @change="forcedata">
-                    <el-option :label="value.name" :value="value.id" v-for="(value,index) in ttSList" :key="index"></el-option>
+                    <el-option :label="value.name" :value="value.name" v-for="(value,index) in ttSList" :key="index"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="去程优先乘车时间段" prop="bookingTime"> 
@@ -401,10 +401,10 @@ export default {
             })
             this.dialogVisible = true
             this.ttList.forEach(v=>{
-                if(v.id === this.ruleForm.fromId){
+                if(v.name === this.ruleForm.fromId){
                     this.fromIdText = v.name 
                 }
-                if(v.id === this.ruleForm.toId){
+                if(v.name === this.ruleForm.toId){
                     this.toIdText = v.name 
                 }
             })
@@ -473,7 +473,7 @@ export default {
       },
       ttChange(){
           getTTStationByNotInId({
-              id: this.ruleForm.fromId
+              name: this.ruleForm.fromId
           }).then(res=>{
               if(res.code == 200){
                   this.ttSList = res.data

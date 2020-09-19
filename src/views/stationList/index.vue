@@ -129,6 +129,12 @@
               <el-form-item label="车站名拼音全拼：" prop="firstSpell" style="width: 100%">
                   <el-input v-model="itemObj.firstSpell" style="width: 300px;" placeholder="请输入车站名拼音全拼"></el-input>
               </el-form-item>
+              <el-form-item label="状态：" prop="status" style="width: 100%">
+                  <el-radio-group v-model="itemObj.status">
+                    <el-radio :label="0">禁用</el-radio>
+                    <el-radio :label="1">正常</el-radio>
+                  </el-radio-group>
+              </el-form-item>
               <el-form-item label="省:" prop="provinceId" style="width:100%">
                 <el-select v-model="itemObj.provinceId" placeholder="请选择省份" @change="changeCity(itemObj.provinceId)" :disabled="disabledCity" style="width: 300px;">
                     <el-option v-for="(item, idx) in areaJson" :key="idx" :label="item.province" :value="item.provinceid"></el-option>
@@ -177,7 +183,9 @@ export default {
       areaJson: [],
       cityList: [],
       countyList: [],
-      itemObj: {},
+      itemObj: {
+        status: 1
+      },
       rules: {
           name: [
             { required: true, message: '请输入车站名称', trigger: 'blur' }
@@ -188,9 +196,9 @@ export default {
           firstSpell: [
             { required: true, message: '请输入车站英文全称', trigger: 'blur' }
           ],
-          address: [
-            { required: true, message: '请输入详细地址', trigger: 'blur' }
-          ],
+          // address: [
+          //   { required: true, message: '请输入详细地址', trigger: 'blur' }
+          // ],
           provinceId: [
               { required: true, message: '请选择省份', trigger: 'blur' }
           ],
@@ -199,6 +207,9 @@ export default {
           ],
           areaId: [
               { required: true, message: '请选择区/县', trigger: 'blur' }
+          ],
+          status: [
+            { required: true, message: '请选择状态', trigger: 'change' }
           ]
       },
       data: {
@@ -231,6 +242,7 @@ export default {
                   data.name = this.itemObj.name
                   data.fullSpell = this.itemObj.fullSpell
                   data.firstSpell = this.itemObj.firstSpell
+                  data.status = this.itemObj.status
                   updTTStaion(data).then(res=>{
                       this.editNewlyDialog = false
                       this.$message({
@@ -369,7 +381,9 @@ export default {
       })
     },
     close(){
-      this.itemObj = {}
+      this.itemObj = {
+        status: 1
+      }
       this.disabledCity = false
       this.loadingBootm = false
       this.getData()

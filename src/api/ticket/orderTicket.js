@@ -31,3 +31,11 @@ export function updateTT(params) {
     data: params
   })
 }
+
+export function refund(params) {
+  return request({
+    url: '/tt/refund',
+    method: 'post',
+    data: params
+  })
+}

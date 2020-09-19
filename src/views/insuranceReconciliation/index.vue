@@ -380,7 +380,7 @@ export default {
           type: 'warning'
         }).then(() => {
           // window.location.href = `${baseUrl}/wash/channelMonth/channelOrderMonthExports?monthIds=${id}`
-          window.location.href = `${baseUrl}/channelMonth/channelOrderMonthExports?monthIds=${id}`
+          window.location.href = `${baseUrl}/wash/channelMonth/channelOrderMonthExports?monthIds=${id}`
           this.getData()
           // serviceOrderMonthExports({monthIds: id}).then(res=>{
           //   // this.down(`${this.thishostName}${res.url}`)

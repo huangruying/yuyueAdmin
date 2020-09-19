@@ -68,6 +68,7 @@
            <el-button type="primary" @click="reset">重置</el-button>
          </div>
          <div>
+            <!-- <el-button type="danger" @click="reimburse(2)">批量退款</el-button> -->
             <el-button type="primary" icon="el-icon-download" @click="exportForm">乘客信息上传表格下载</el-button>
            <el-button type="primary" icon="el-icon-refresh" @click="resetGetData"></el-button>
          </div>
@@ -160,7 +161,8 @@
       </el-table-column>
       <el-table-column label="操作" width="180" fixed="right" prop="audit_status" align="center">
         <template slot-scope="scope">
-           <el-button size="mini" type="primary" @click="lookData(scope.row)">查看</el-button>
+          <el-button size="mini" type="danger" @click="reimburse(scope.row)" v-if="!(scope.row.status === '已退款')">退款</el-button>
+          <el-button size="mini" type="primary" @click="lookData(scope.row)">查看</el-button>
         </template>
       </el-table-column>  
     </el-table>
@@ -278,7 +280,7 @@
 </template>
 
 <script>
-import { getTTOrderList, exportTTOrderList, getTTOrderDetail, updateTT } from "@/api/ticket/orderTicket"
+import { getTTOrderList, exportTTOrderList, getTTOrderDetail, updateTT, refund } from "@/api/ticket/orderTicket"
 import Pagination from "@/components/Pagination"
 import { export_txt_to_zip } from "@/vendor/Export2Zip.js"
 import { baseUrl } from '@/utils/baseUrl'
@@ -428,6 +430,52 @@ export default {
   methods: {
     handleSelectionChange(val) {
         this.itemArr = val
+    },
+    reimburse(item){
+      if(item === 2){
+        if(this.itemArr.length == 0){
+          this.$message({
+            type: 'info',
+            message: '请选择数据！'
+          })
+          return
+        }
+        var arr = []
+        this.itemArr.forEach(v=>{
+          arr.push(v.orderno)
+        })
+        this.open('确定批量退款？' , arr)
+      }else{
+        this.open('确定退款？' , [item.orderno])
+      }
+    },
+    open(text,id) {
+        this.$confirm( text , '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.loading = true
+          refund({orderList: id}).then(res=>{
+            if(res.code == 200){
+              this.$message({
+                type: 'success',
+                message: '操作成功!'
+              });
+              this.getData()
+            }else{
+              this.$message({
+                type: 'info',
+                message: res.msg
+              })
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          });          
+        });
     },
     confirmStatus(){
       if(!this.status){
