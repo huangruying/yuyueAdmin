@@ -56,3 +56,11 @@ export function delYuyueByuId(data) {
     data
   })
 }
+// 渠道列表
+export function list4Select(data) {
+  return request({
+    url: '/wash/channe/list4Select',
+    method: 'post',
+    data
+  })
+}

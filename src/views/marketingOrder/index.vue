@@ -157,7 +157,7 @@
       <el-table-column label="操作" width="180" fixed="right" prop="audit_status" align="center">
         <template slot-scope="scope">
            <el-button size="mini" type="primary" @click="lookOver(scope.row)">查看</el-button>
-          <el-button size="mini" type="danger" @click="remove(scope.row)">删除</el-button>
+           <el-button size="mini" type="danger" @click="remove(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>

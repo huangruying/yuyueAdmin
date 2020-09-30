@@ -32,7 +32,7 @@ export function delTTTicketByStationId(params) {
   })
 }
 
-export function getTTicketPriceById(params) {
+export function getTTTicketPriceById(params) {
   return request({
     url: '/tt/getTTTicketPriceById',
     method: 'post',
@@ -43,6 +43,14 @@ export function getTTicketPriceById(params) {
 export function updTTTicketByStationId(params) {
   return request({
     url: '/tt/updTTTicketByStationId',
+    method: 'post',
+    data: params
+  })
+}
+
+export function getTTStation(params) {
+  return request({
+    url: '/tt/getTTStation',
     method: 'post',
     data: params
   })

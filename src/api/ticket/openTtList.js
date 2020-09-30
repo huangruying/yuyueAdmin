@@ -16,9 +16,9 @@ export function deleteTTStationLine(data) {
     })
 }
 
-export function getTTStation(params) {
+export function getTTStationTemp(params) {
     return request({
-      url: '/tt/getTTStation',
+      url: '/tt/getTTStationTemp',
       method: 'post',
       data: params
     })

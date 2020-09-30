@@ -47,3 +47,11 @@ export function getSeatLeavelPriceByIdAndEid(data) {
     data: data
   })
 }
+
+export function getFromOrToStation(data) {
+  return request({
+    url: '/tt/getFromOrToStation',
+    method: 'post',
+    data: data
+  })
+}

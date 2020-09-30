@@ -86,7 +86,10 @@
       </el-table-column>
       <el-table-column label="操作" width="180" fixed="right" prop="audit_status" align="center">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" @click="lookData(scope.row)">查看</el-button>
+          <div style="margin-bottom: 8px;">
+             <el-button size="mini" type="primary" @click="lookData(scope.row)">查看</el-button>
+             <el-button size="mini" type="primary" @click="compile(scope.row)">编辑</el-button>
+          </div>
           <el-button size="mini" type="danger" @click="remove(scope.row)">删除</el-button>
         </template>
       </el-table-column>  
@@ -109,6 +112,7 @@
         <el-form label-position="right" ref="ruleForm" label-width="150px" :model="newlyList" class="clearFix">
             <el-form-item label="出发站：" prop="fromStation" style="width: 100%" :rules="[{ required: true, message: '请选择出发站', trigger: 'blur' }]">
                 <el-select
+                    :disabled="fromTodisabled"
                     style="width:50%"
                     v-model="newlyList.fromStation"
                     filterable
@@ -120,27 +124,28 @@
                     <el-option
                     v-for="item in stationList"
                     :key="item.id"
-                    :label="item.name"
-                    :value="item.name">
+                    :label="item.from_station"
+                    :value="item.from_station">
                     </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="到达站：" prop="toStation" style="width: 100%" :rules="[{ required: true, message: '请选择到达站', trigger: 'blur' }]">
                 <el-select
+                    :disabled="fromTodisabled"
                     style="width:50%"
                     v-model="newlyList.toStation"
                     filterable
                     remote
                     reserve-keyword
-                    placeholder="请输入出发站"
+                    placeholder="请输入到达站"
                     :remote-method="querySearch2"
                     :loading="fromLoading"
                     @change="toInputChange">
                     <el-option
                     v-for="item in stationList2"
                     :key="item.id"
-                    :label="item.name"
-                    :value="item.name">
+                    :label="item.to_station"
+                    :value="item.to_station">
                     </el-option>
                 </el-select>
             </el-form-item>
@@ -153,7 +158,7 @@
                 </div>
             </el-form-item>
             <el-form-item label="备注：" prop="remark" style="width: 100%">
-                <el-input v-model="itemList.remark" style="width:50%" placeholder="请输入备注"></el-input>
+                <el-input v-model="newlyList.remark" style="width:50%" placeholder="请输入备注"></el-input>
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -161,6 +166,7 @@
             <el-button type="primary" @click="confirmNewly('ruleForm')" :loading="confirmLoading">确 定</el-button>
         </span>
     </el-dialog>
+
     <!-- 查看 -->
     <el-dialog
       :title="dialogTitle"
@@ -244,6 +250,62 @@
               </el-table-column>
             </el-table>
         </div>
+        <el-divider content-position="left"><span class="title">坐席价格</span></el-divider>
+        <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;">
+            <el-table
+              :data="[itemList]"
+              border
+              stripe
+              fit
+              :row-class-name="tableRowClassName"
+              style="width: 100%;">
+              <el-table-column label="硬座" prop="priceYz" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.priceYz }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="软座" prop="priceRz" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.priceRz }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="硬卧" prop="priceYw" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.priceYw }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="动卧" prop="priceDw" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.priceDw }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="软卧" prop="priceRw" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.priceRw }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="二等座" prop="priceEd" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.priceEd }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label=" 一等座" prop="priceYd" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.priceYd }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="特等座" prop="priceTd" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.priceTd }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="商务座" prop="priceSw" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.priceSw }}</span>
+                </template>
+              </el-table-column>
+            </el-table>
+        </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="editDialog = false">返 回</el-button>
       </span>
@@ -252,7 +314,7 @@
 </template>
 
 <script>
-import { getTTStationLineList, deleteTTStationLine, getTTStation, getStationToPrice, addStationLine } from "@/api/ticket/openTtList"
+import { getTTStationLineList, deleteTTStationLine, getTTStationTemp, getStationToPrice, addStationLine } from "@/api/ticket/openTtList"
 import Pagination from "@/components/Pagination"
 import { baseUrl } from '@/utils/baseUrl'
 export default {
@@ -272,6 +334,7 @@ export default {
       editDialog: false,
       newlyDialog: false,
       confirmLoading: false,
+      fromTodisabled: false,
       bookingDateOptions: {
           disabledDate(time) {
             // return time.getTime() > Date.now();
@@ -375,6 +438,36 @@ export default {
     forceUpdate(){
         this.$forceUpdate
     },
+    compile(item){
+      var list = this.seatLevel.filter(v=>{
+          if(v.seatLevel === "price_yz"){
+            v.price = item.priceYz
+          }else if(v.seatLevel === "price_rz"){
+            v.price = item.priceRz
+          }else if(v.seatLevel === "price_yw"){
+            v.price = item.priceYw
+          }else if(v.seatLevel === "price_dw"){
+            v.price = item.priceDw
+          }else if(v.seatLevel === "price_rw"){
+            v.price = item.priceRw
+          }else if(v.seatLevel === "price_ed"){
+            v.price = item.priceEd
+          }else if(v.seatLevel === "price_yd"){
+            v.price = item.priceYd
+          }else if(v.seatLevel === "price_td"){
+            v.price = item.priceTd
+          }else if(v.seatLevel === "price_sw"){
+            v.price = item.priceSw
+          }
+          return v
+      })
+      this.newlyList.fromStation = item.fromStation
+      this.newlyList.toStation = item.toStation
+      this.seatLevel = list
+      this.dialogTitle = "编辑"
+      this.newlyDialog = true
+      this.fromTodisabled = true
+    },
     toInputChange(val){
         if(this.newlyList.fromStation){
             getStationToPrice({
@@ -407,6 +500,7 @@ export default {
                     return v
                 })
                 data.ttStationLinePriceList = list
+                data.remark = this.newlyList.remark
                 addStationLine(data).then(res=>{
                     if(res.code == 200){
                         this.confirmLoading = false
@@ -433,7 +527,7 @@ export default {
     querySearch(queryString) {
         if(queryString !== ''){
              this.fromLoading = true
-            getTTStation({fromStation: queryString}).then(res=>{
+            getTTStationTemp({fromStation: queryString}).then(res=>{
                 this.fromLoading = false
                this.stationList = res.data
             })
@@ -444,7 +538,7 @@ export default {
     querySearch2(queryString) {
         if(queryString !== ''){
              this.fromLoading = true
-            getTTStation({toStation: queryString}).then(res=>{
+            getTTStationTemp({toStation: queryString}).then(res=>{
                this.fromLoading = false
                this.stationList2 = res.data
             })
@@ -455,6 +549,7 @@ export default {
     newly(){
         this.dialogTitle = "新增"
         this.newlyDialog = true
+        this.fromTodisabled = false
     },
     handleSelectionChange(val) {
         this.itemArr = val
@@ -584,7 +679,6 @@ export default {
 .price_box{
     width: 100%;
     margin-bottom: 10px;
-    
 }
 .status{
   display: flex;

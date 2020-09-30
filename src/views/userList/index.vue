@@ -77,6 +77,15 @@
               </el-form-item>
             </el-form>
         </div>
+        <el-divider content-position="left"><span class="title">所属渠道</span></el-divider>
+        <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;">
+          <div class="roles_list">
+              <el-button class="quxiao" @click="quxiao">取消选择</el-button>
+              <el-radio-group v-model="lobbyObj.channelId" :disabled="disabledAdmin" @change="forceUpdate">
+                <el-radio :label="item.id" v-for="(item,index) in selectList" :key="index">{{item.name}}</el-radio>
+              </el-radio-group>
+          </div>
+        </div>
         <el-divider content-position="left"><span class="title">权限管理</span></el-divider>
         <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;">
           <div class="roles_list">
@@ -95,7 +104,7 @@
 </template>
 
 <script>
-import { findUserRolePermission , findBmRoleList , saveBmUserRole , saveYuyueUser , delYuyueByuId } from '@/api/guest/userList'
+import { findUserRolePermission , findBmRoleList , saveBmUserRole , saveYuyueUser , delYuyueByuId, list4Select } from '@/api/guest/userList'
 import { dotOssUpload } from '@/api/nodeList'
 import Pagination from "@/components/Pagination"
 export default {
@@ -128,6 +137,7 @@ export default {
             imageUrl: "",
             textInner: "",
             rolesListCon: [],
+            selectList: [],
             rolesList: "",
             itemId: null
         }
@@ -136,6 +146,13 @@ export default {
         this.getData()
     },
     methods: {
+        quxiao(){
+          this.lobbyObj.channelId = ''
+          this.$forceUpdate()
+        },
+        forceUpdate(){
+          this.$forceUpdate()
+        },
         lobbyDialog(){
             var data = this.lobbyObj
             if(!data.password){
@@ -147,6 +164,9 @@ export default {
             }
             data.pic = this.imageUrl
             data.roleId = this.rolesList
+            if(!data.channelId){
+              data.channelId = 0
+            }
             if(this.itemId){
                 data.id = this.itemId
                 saveBmUserRole(data).then(res=>{
@@ -174,7 +194,17 @@ export default {
                 })
             }
         },
+        apiList4Select(){
+          list4Select().then(res=>{
+            if(res.code == 200){
+              this.selectList = res.data
+            }else{
+              this.$message(res.msg)
+            }
+          })
+        },
         newly(){
+            this.apiList4Select()
             this.textInner = "新增用户"
             this.innerVisible = true
             this.apilist()
@@ -216,9 +246,15 @@ export default {
             // }else{
             //   this.disabledAdmin = false
             // }
+            this.apiList4Select()
             this.itemId = item.id
             this.textInner = "编辑信息"
             this.innerVisible = true
+            if(item.channelId && item.channelId !== 0){
+              this.lobbyObj.channelId = item.channelId
+            }else{
+              this.lobbyObj.channelId = ""
+            }
             this.lobbyObj.username = item.username
             this.lobbyObj.mobile = item.mobile
             this.imageUrl = item.pic
@@ -312,6 +348,9 @@ export default {
   .qin{
     margin: 20px;
     color: #ff0000;
+  }
+  .quxiao{
+    margin: 0 20px 20px;
   }
 }
 .title{

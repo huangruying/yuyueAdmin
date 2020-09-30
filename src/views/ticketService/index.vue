@@ -5,14 +5,47 @@
             <el-form-item label="出发日期" prop="bookingDate">
                  <el-date-picker type="date" :picker-options="pickerOptions" value-format="yyyy-MM-dd" @change="changedates" placeholder="请选择出发日期" v-model="ruleForm.bookingDate" style="width: 400px;"></el-date-picker>
             </el-form-item>
-            <el-form-item label="去程出发站" prop="fromId">
-                <el-select v-model="ruleForm.fromId" placeholder="请选择或输入去程出发站" filterable clearable style="width: 400px;" @change="ttChange">
+            <el-form-item label="去程出发站" prop="fromStation">
+                <!-- <el-select v-model="ruleForm.fromId" placeholder="请选择或输入去程出发站" filterable clearable style="width: 400px;" @change="ttChange">
                     <el-option :label="value.name" :value="value.name" v-for="(value,index) in ttList" :key="index"></el-option>
+                </el-select> -->
+                <el-select
+                    style="width: 400px;"
+                    v-model="ruleForm.fromStation"
+                    filterable
+                    remote
+                    reserve-keyword
+                    placeholder="请输入出发站"
+                    :remote-method="querySearch"
+                    :loading="fromLoading">
+                    <el-option
+                    v-for="item in stationList"
+                    :key="item.id"
+                    :label="item.from_station"
+                    :value="item.from_station">
+                    </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="去程到达站" prop="toId">
-                <el-select v-model="ruleForm.toId" placeholder="请选择或输入去程到达站" filterable clearable style="width: 400px;" @change="forcedata">
+            <el-form-item label="去程到达站" prop="toStation">
+                <!-- <el-select v-model="ruleForm.toId" placeholder="请选择或输入去程到达站" filterable clearable style="width: 400px;" @change="forcedata">
                     <el-option :label="value.name" :value="value.name" v-for="(value,index) in ttSList" :key="index"></el-option>
+                </el-select> -->
+                <el-select
+                    @change="forcedata"
+                    style="width: 400px;"
+                    v-model="ruleForm.toStation"
+                    filterable
+                    remote
+                    reserve-keyword
+                    placeholder="请输入出发站"
+                    :remote-method="querySearch2"
+                    :loading="fromLoading">
+                    <el-option
+                    v-for="item in stationList2"
+                    :key="item.id"
+                    :label="item.to_station"
+                    :value="item.to_station">
+                    </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="去程优先乘车时间段" prop="bookingTime"> 
@@ -37,7 +70,7 @@
                     <el-option
                         v-for="item in seatList"
                         :key="item.seatLevel"
-                        :label="item.name"
+                        :label="item.seatLevelName"
                         :value="item.seatLevel">
                     </el-option>
                 </el-select>
@@ -170,11 +203,14 @@
 
 <script>
 import formatTime from "@/utils/formatTime"
-import { getTTStation, preAddTTPassenger, addTTPassenger, getAvailableTime, getSeatLeavelPriceByIdAndEid, getTTStationByNotInId } from "@/api/ticket/ticketService"
+import { getTTStation, preAddTTPassenger, addTTPassenger, getAvailableTime, getSeatLeavelPriceByIdAndEid, getTTStationByNotInId, getFromOrToStation } from "@/api/ticket/ticketService"
 export default {
     data(){
         const that = this
         return{
+            fromLoading: false,
+            stationList: [],
+            stationList2: [],
             pickerOptions: {
                 disabledDate(time) {
                     // var a = formatTime(time.getTime(),'yyyy-mm-dd')
@@ -194,7 +230,6 @@ export default {
                 needQuick: 0,
                 needWaiting: 0,
                 needBack: 0,
-                toId: "",
                 ttPassengerList: [
                     {
                         name: "",
@@ -223,10 +258,10 @@ export default {
                 backDate: [
                     { required: true, message: '请选择返程日期', trigger: 'change' }
                 ],
-                fromId: [
+                fromStation: [
                     { required: true, message: '请选择出发车站', trigger: 'change' }
                 ],
-                toId: [
+                toStation: [
                     { required: true, message: '请选择到达车站', trigger: 'change' }
                 ],
                 bookingTime: [
@@ -312,7 +347,6 @@ export default {
               { text: '18:00-24:00', value: 4 }
                 //  { text: '21:00-24:00', value: 5 }
             ],
-            ttList: [],
             ttSList: [],
             fromIdText: "",
             toIdText: "",
@@ -323,7 +357,6 @@ export default {
         }
     },
     mounted(){
-        this.apiGetTTStation()
         getAvailableTime({hours: 72}).then(res=>{
             this.dateHours = res.data
             this.date = res.data.split(" ")[0]
@@ -331,13 +364,28 @@ export default {
         })
     },
     methods: {
-      apiGetTTStation(){
-          getTTStation().then(res=>{
-              if(res.code == 200){
-                  this.ttList = res.data
-              }
-          })
-      },
+        querySearch(queryString) {
+            if(queryString !== ''){
+                this.fromLoading = true
+                getFromOrToStation({fromStation: queryString}).then(res=>{
+                    this.fromLoading = false
+                    this.stationList = res.data
+                })
+            }else{
+                this.stationList = []
+            }
+        },
+        querySearch2(queryString) {
+            if(queryString !== ''){
+                this.fromLoading = true
+                getFromOrToStation({toStation: queryString}).then(res=>{
+                this.fromLoading = false
+                this.stationList2 = res.data
+                })
+            }else{
+                this.stationList2 = []
+            }
+        },
       addPassenger(){
           if(this.ruleForm.ttPassengerList.length >= 5){
               this.$message("一次提交最多添加5位乘客信息！")
@@ -400,14 +448,8 @@ export default {
                 }
             })
             this.dialogVisible = true
-            this.ttList.forEach(v=>{
-                if(v.name === this.ruleForm.fromId){
-                    this.fromIdText = v.name 
-                }
-                if(v.name === this.ruleForm.toId){
-                    this.toIdText = v.name 
-                }
-            })
+            this.fromIdText = this.ruleForm.fromStation 
+            this.toIdText = this.ruleForm.toStation 
           } else {
             this.$message("填写有误！")
             return false;
@@ -471,24 +513,10 @@ export default {
       resetForm(formName) {
         this.$refs[formName].resetFields();
       },
-      ttChange(){
-          getTTStationByNotInId({
-              name: this.ruleForm.fromId
-          }).then(res=>{
-              if(res.code == 200){
-                  this.ttSList = res.data
-              }else{
-                  this.$message(res.msg)
-              }
-          })
-          if(this.ruleForm.toId){
-              this.ruleForm.toId = ""
-          }
-      },
       getSeatLeavelPrice(){
           getSeatLeavelPriceByIdAndEid({
-              id: this.ruleForm.fromId,
-              eid: this.ruleForm.toId
+              starting: this.ruleForm.fromStation,
+              terminal: this.ruleForm.toStation
           }).then(res=>{
               if(res.code == 200){
                   this.seatList = res.data
@@ -499,7 +527,7 @@ export default {
       },
       forcedata(){
           this.$forceUpdate()
-          if(this.ruleForm.toId){
+          if(this.ruleForm.toStation){
              this.getSeatLeavelPrice() 
           }
       }
