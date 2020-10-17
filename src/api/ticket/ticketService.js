@@ -55,3 +55,27 @@ export function getFromOrToStation(data) {
     data: data
   })
 }
+
+export function getFromStationList(data) {
+  return request({
+    url: '/tt/getFromStationList',
+    method: 'post',
+    data: data
+  })
+}
+
+export function getToStationList(data) {
+  return request({
+    url: '/tt/getToStationList',
+    method: 'post',
+    data: data
+  })
+}
+
+export function getSeatLevelByStation(data) {
+  return request({
+    url: '/tt/getSeatLevelByStation',
+    method: 'post',
+    data: data
+  })
+}

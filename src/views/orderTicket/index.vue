@@ -99,14 +99,14 @@
           <span>{{ scope.row.quantity }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="出发站" prop="from_id" align="center" width="140px">
+      <el-table-column label="出发站" prop="from_station" align="center" width="140px">
         <template slot-scope="scope">
-          <span>{{ scope.row.from_id }}</span>
+          <span>{{ scope.row.from_station }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="到达站" prop="to_id" align="center" width="140px">
+      <el-table-column label="到达站" prop="to_station" align="center" width="140px">
         <template slot-scope="scope">
-          <span>{{ scope.row.to_id }}</span>
+          <span>{{ scope.row.to_station }}</span>
         </template>
       </el-table-column>
       <!-- <el-table-column label="去程车次" prop="code" align="center">
@@ -185,11 +185,11 @@
         <el-divider content-position="left"><span class="title">基本信息</span></el-divider>
         <div class="query clearFix" style="padding-top:30px;margin-bottom:30px;">
           <el-form label-position="right" ref="ruleForm" label-width="150px" :model="itemList" class="clearFix">
-              <el-form-item label="出发站：" prop="from_id" style="width: 100%">
-                  <el-input v-model="itemList.from_id" style="width:50%" disabled></el-input>
+              <el-form-item label="出发站：" prop="from_station" style="width: 100%">
+                  <el-input v-model="itemList.from_station" style="width:50%" disabled></el-input>
               </el-form-item>
-              <el-form-item label="到达站：" prop="to_id" style="width: 100%">
-                  <el-input v-model="itemList.to_id" style="width:50%" disabled></el-input>
+              <el-form-item label="到达站：" prop="to_station" style="width: 100%">
+                  <el-input v-model="itemList.to_station" style="width:50%" disabled></el-input>
               </el-form-item>
               <el-form-item label="出发日期：" prop="booking_date" style="width: 100%">
                   <el-input v-model="itemList.booking_date" style="width:50%" disabled></el-input>

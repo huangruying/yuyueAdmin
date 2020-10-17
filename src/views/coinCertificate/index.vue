@@ -218,7 +218,8 @@
                     </el-radio-group>
               </el-form-item>
               <el-form-item label="说明详情：" prop="description" style="width: 100%">
-                  <quillEditor v-model="itemObj.description" ref="myQuillEditor" :options="editorOption"/>
+                  <!-- <quillEditor v-model="itemObj.description" ref="myQuillEditor" :options="editorOption"/> -->
+                  <editor-bar v-model="itemObj.description" :isClear="isClear"></editor-bar>
               </el-form-item>
           </el-form>
         </div>
@@ -414,14 +415,16 @@ import { listRedeem, productList4Select, findIproductInfos, addRedeem, updateRed
 import Pagination from "@/components/Pagination"
 import { baseUrl } from '@/utils/baseUrl'
 // 富文本编辑器
-import { quillEditor } from "vue-quill-editor"; 
-import 'quill/dist/quill.core.css';
-import 'quill/dist/quill.snow.css';
-import 'quill/dist/quill.bubble.css';
+// import { quillEditor } from "vue-quill-editor"; 
+// import 'quill/dist/quill.core.css';
+// import 'quill/dist/quill.snow.css';
+// import 'quill/dist/quill.bubble.css';
+import EditorBar from './components/wangEnduit'
 export default {
   components: {
     Pagination,
-    quillEditor
+    // quillEditor
+    EditorBar
   },
   data() {
     var storePhone = (rule, value, callback) => {
@@ -449,6 +452,7 @@ export default {
           return time.getTime() < new Date(dar.expire).getTime();
         }
       },
+      isClear: false,
       editorOption: {},
       comment: "",
       itemPicker: "有效期：",

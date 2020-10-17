@@ -3,13 +3,14 @@
       <div class="form_box">
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="200px" class="demo-ruleForm">
             <el-form-item label="出发日期" prop="bookingDate">
-                 <el-date-picker type="date" :picker-options="pickerOptions" value-format="yyyy-MM-dd" @change="changedates" placeholder="请选择出发日期" v-model="ruleForm.bookingDate" style="width: 400px;"></el-date-picker>
+                <!-- @change="changedates" -->
+                 <el-date-picker type="date" :picker-options="pickerOptions" value-format="yyyy-MM-dd" @change="forcedata" placeholder="请选择出发日期" v-model="ruleForm.bookingDate" style="width: 400px;"></el-date-picker>
             </el-form-item>
             <el-form-item label="去程出发站" prop="fromStation">
-                <!-- <el-select v-model="ruleForm.fromId" placeholder="请选择或输入去程出发站" filterable clearable style="width: 400px;" @change="ttChange">
-                    <el-option :label="value.name" :value="value.name" v-for="(value,index) in ttList" :key="index"></el-option>
-                </el-select> -->
-                <el-select
+                <el-select v-model="ruleForm.fromStation" placeholder="请选择或输入去程出发站" filterable clearable style="width: 400px;" @change="forcedata">
+                    <el-option :label="value.fromStation" :value="value.fromStation" v-for="(value,index) in ttList" :key="index"></el-option>
+                </el-select>
+                <!-- <el-select
                     style="width: 400px;"
                     v-model="ruleForm.fromStation"
                     filterable
@@ -24,13 +25,13 @@
                     :label="item.from_station"
                     :value="item.from_station">
                     </el-option>
-                </el-select>
+                </el-select> -->
             </el-form-item>
             <el-form-item label="去程到达站" prop="toStation">
-                <!-- <el-select v-model="ruleForm.toId" placeholder="请选择或输入去程到达站" filterable clearable style="width: 400px;" @change="forcedata">
-                    <el-option :label="value.name" :value="value.name" v-for="(value,index) in ttSList" :key="index"></el-option>
-                </el-select> -->
-                <el-select
+                <el-select v-model="ruleForm.toStation" placeholder="请选择或输入去程到达站" filterable clearable style="width: 400px;" @change="forcedata">
+                    <el-option :label="value.toStation" :value="value.toStation" v-for="(value,index) in ttSList" :key="index"></el-option>
+                </el-select>
+                <!-- <el-select
                     @change="forcedata"
                     style="width: 400px;"
                     v-model="ruleForm.toStation"
@@ -46,13 +47,13 @@
                     :label="item.to_station"
                     :value="item.to_station">
                     </el-option>
-                </el-select>
+                </el-select> -->
             </el-form-item>
-            <el-form-item label="去程优先乘车时间段" prop="bookingTime"> 
+            <!-- <el-form-item label="去程优先乘车时间段" prop="bookingTime">  -->
                 <!-- required -->
-                <el-select v-model="ruleForm.bookingTime" placeholder="请选择去程优先乘车时间段" filterable clearable style="width: 400px;">
+                <!-- <el-select v-model="ruleForm.bookingTime" placeholder="请选择去程优先乘车时间段" filterable clearable style="width: 400px;">
                     <el-option :label="value.text" :value="value.text" v-for="(value,index) in timeList" :key="index"></el-option>
-                </el-select>
+                </el-select> -->
                 <!-- <div class="date_box">
                     <el-form-item prop="value">
                         <el-time-select v-model="ruleForm.value" :picker-options="{start: '08:00',step: '00:15',end: '23:30'}" placeholder="请选择开始时间" style="width: 250px;">
@@ -64,7 +65,7 @@
                         </el-time-select>
                     </el-form-item>
                 </div> -->
-            </el-form-item>
+            <!-- </el-form-item> -->
             <el-form-item prop="seatLevel" label="坐席">
                 <el-select v-model="ruleForm.seatLevel" placeholder="请选择坐席" style="width: 400px;">
                     <el-option
@@ -78,7 +79,7 @@
             <el-form-item label="去程车次号" prop="code">
                 <el-input type="text" placeholder="请输入去程车次号" v-model="ruleForm.code" style="width: 400px;"></el-input>
             </el-form-item>
-            <el-form-item label="专用安检通道定制" prop="needQuick">
+            <!-- <el-form-item label="专用安检通道定制" prop="needQuick">
                 <div class="orientation">
                     <el-radio-group v-model="ruleForm.needQuick">
                         <el-radio :label="0">不需要</el-radio>
@@ -95,20 +96,20 @@
                     </el-radio-group>
                     <span>收费标准参考：10/人次（平日价）、20元/人次（周末）、30元/人次（节假日）</span>
                 </div>
-            </el-form-item>
-            <el-form-item label="是否需要预定往返" prop="needBack">
+            </el-form-item> -->
+            <!-- <el-form-item label="是否需要预定往返" prop="needBack">
                     <el-radio-group v-model="ruleForm.needBack">
                         <el-radio :label="0">不预定往返</el-radio>
                         <el-radio :label="1">预定往返 （预定往返时，去程和返程人数需保持一致，不一致时请分开下单）</el-radio>
                     </el-radio-group>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="返程日期" prop="backDate" v-if="ruleForm.needBack===1">
                  <el-date-picker type="date" :picker-options="pickerOptions" value-format="yyyy-MM-dd" @change="changedates2" placeholder="请选择返程日期" v-model="ruleForm.backDate" style="width: 400px;"></el-date-picker>
             </el-form-item>
-            <el-form-item label="返程优先乘车时间段" v-if="ruleForm.needBack===1" prop="backTime">
-                <el-select v-model="ruleForm.backTime" placeholder="请选择返程优先乘车时间段" filterable clearable style="width: 400px;">
+            <!-- <el-form-item label="返程优先乘车时间段" v-if="ruleForm.needBack===1" prop="backTime"> -->
+                <!-- <el-select v-model="ruleForm.backTime" placeholder="请选择返程优先乘车时间段" filterable clearable style="width: 400px;">
                     <el-option :label="value.text" :value="value.text" v-for="(value,index) in timeList2" :key="index"></el-option>
-                </el-select>
+                </el-select> -->
                 <!-- <div class="date_box">
                     <el-form-item prop="date3">
                         <el-time-select v-model="ruleForm.date3" :picker-options="{start: '08:00',step: '00:15',end: '23:30'}" placeholder="请选择开始时间" style="width: 250px;">
@@ -120,7 +121,7 @@
                         </el-time-select>
                     </el-form-item>
                 </div> -->
-            </el-form-item>
+            <!-- </el-form-item> -->
             <el-form-item label="返程车次号" prop="backCode" v-if="ruleForm.needBack===1">
                 <el-input type="text" placeholder="请输入返程车次号" v-model="ruleForm.backCode" style="width: 400px;"></el-input>
             </el-form-item>
@@ -203,7 +204,7 @@
 
 <script>
 import formatTime from "@/utils/formatTime"
-import { getTTStation, preAddTTPassenger, addTTPassenger, getAvailableTime, getSeatLeavelPriceByIdAndEid, getTTStationByNotInId, getFromOrToStation } from "@/api/ticket/ticketService"
+import { getTTStation, preAddTTPassenger, addTTPassenger, getAvailableTime, getSeatLeavelPriceByIdAndEid, getTTStationByNotInId, getFromOrToStation , getFromStationList , getToStationList , getSeatLevelByStation } from "@/api/ticket/ticketService"
 export default {
     data(){
         const that = this
@@ -227,8 +228,8 @@ export default {
             loadingBtn: false,
             dialogVisible: false,
             ruleForm: {
-                needQuick: 0,
-                needWaiting: 0,
+                // needQuick: 0,
+                // needWaiting: 0,
                 needBack: 0,
                 ttPassengerList: [
                     {
@@ -347,6 +348,7 @@ export default {
               { text: '18:00-24:00', value: 4 }
                 //  { text: '21:00-24:00', value: 5 }
             ],
+            ttList: [],
             ttSList: [],
             fromIdText: "",
             toIdText: "",
@@ -362,8 +364,28 @@ export default {
             this.date = res.data.split(" ")[0]
             this.hours = res.data.split(" ")[1]
         })
+        this.apiTtList()
+        this.apiTtSList()
     },
     methods: {
+        apiTtList(){
+            getFromStationList().then(res=>{
+                if(res.code == 200){
+                  this.ttList = res.data
+                }else{
+                    this.$message(res.msg)
+                }
+            })
+        },
+        apiTtSList(){
+            getToStationList().then(res=>{
+                if(res.code == 200){
+                  this.ttSList = res.data
+                }else{
+                    this.$message(res.msg)
+                }
+            })
+        },
         querySearch(queryString) {
             if(queryString !== ''){
                 this.fromLoading = true
@@ -464,19 +486,22 @@ export default {
                   return this.tab(dates, this.dateHours)
               })
               this.timeList = dataTime
-              if(this.ruleForm.bookingTime){
-                  this.ruleForm.bookingTime = ""
-              }
+            //   if(this.ruleForm.bookingTime){
+            //       this.ruleForm.bookingTime = ""
+            //   }
           }else{
               this.timeList = this.timeListCopy 
           }
       },
       changedates2(){
-          if(!this.ruleForm.bookingDate || !this.ruleForm.bookingTime){
+        //   if(!this.ruleForm.bookingDate || !this.ruleForm.bookingTime){
+          if(!this.ruleForm.bookingDate){
               this.ruleForm.backDate = ""
               this.$message("请先选择出发日期及优先乘车时间段时间")
+              this.$message("请先选择出发日期")
           }else{
-              var time = this.ruleForm.bookingDate + " " + this.ruleForm.bookingTime.split("-")[0]
+            //   var time = this.ruleForm.bookingDate + " " + this.ruleForm.bookingTime.split("-")[0]
+              var time = this.ruleForm.bookingDate
               if(this.ruleForm.bookingDate === this.ruleForm.backDate){
                 //   出发和返程是同一天
                 var dataTime = this.timeList2.filter(v=>{
@@ -489,9 +514,9 @@ export default {
                     this.$message("该日期已无时间可提供返程，请选择其他日期或修改出发时间。")
                 }else{
                     this.timeList2 = dataTime
-                    if(this.ruleForm.backTime){
-                        this.ruleForm.backTime = ""
-                    }
+                    // if(this.ruleForm.backTime){
+                    //     this.ruleForm.backTime = ""
+                    // }
                 }
               }else if(this.tab(this.ruleForm.bookingDate,this.ruleForm.backDate)){
                   this.ruleForm.backDate = ""
@@ -514,12 +539,20 @@ export default {
         this.$refs[formName].resetFields();
       },
       getSeatLeavelPrice(){
-          getSeatLeavelPriceByIdAndEid({
-              starting: this.ruleForm.fromStation,
-              terminal: this.ruleForm.toStation
+          if(!this.ruleForm.bookingDate){
+              this.$message("请选择出发日期!")
+              return
+          }
+          getSeatLevelByStation({
+              fromStation: this.ruleForm.fromStation,
+              toStation: this.ruleForm.toStation,
+              ticketDate: this.ruleForm.bookingDate
           }).then(res=>{
-              if(res.code == 200){
+              if(res.code == 200 && res.data){
                   this.seatList = res.data
+                  if(res.data.length <= 0){
+                      this.$message("该日期暂无坐席票数开放，请修改出发日期或更换出发、到达站点")
+                  }
               }else{
                   this.$message(res.msg)
               }
@@ -527,7 +560,7 @@ export default {
       },
       forcedata(){
           this.$forceUpdate()
-          if(this.ruleForm.toStation){
+          if(this.ruleForm.toStation && this.ruleForm.fromStation){
              this.getSeatLeavelPrice() 
           }
       }

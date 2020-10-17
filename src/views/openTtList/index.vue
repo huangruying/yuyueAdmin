@@ -74,7 +74,7 @@
           <span>{{ scope.row.toBelongto }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="订单状态" prop="status" align="center">
+      <el-table-column label="状态" prop="status" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.statusCopy }}</span>
         </template>
@@ -106,7 +106,7 @@
       :title="dialogTitle"
       :close-on-click-modal="false"
       :visible.sync="newlyDialog"
-      width="60%"
+      width="80%"
       @close="closeNewly"
       center>
         <el-form label-position="right" ref="ruleForm" label-width="150px" :model="newlyList" class="clearFix">
@@ -157,8 +157,17 @@
                     </el-input>
                 </div>
             </el-form-item>
+            <el-form-item label="状态：" prop="status" style="width: 100%">
+                  <el-radio-group v-model="newlyList.status" @change="forceUpdate">
+                    <el-radio :label="0">禁用</el-radio>
+                    <el-radio :label="1">正常</el-radio>
+                  </el-radio-group>
+              </el-form-item>
             <el-form-item label="备注：" prop="remark" style="width: 100%">
                 <el-input v-model="newlyList.remark" style="width:50%" placeholder="请输入备注"></el-input>
+            </el-form-item>
+            <el-form-item label="线路介绍：" prop="introduce" style="width: 100%">
+                <editor-bar v-model="newlyList.introduce" :isClear="isClear" @change="change"></editor-bar>
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -317,15 +326,22 @@
 import { getTTStationLineList, deleteTTStationLine, getTTStationTemp, getStationToPrice, addStationLine } from "@/api/ticket/openTtList"
 import Pagination from "@/components/Pagination"
 import { baseUrl } from '@/utils/baseUrl'
+// 富文本编辑器
+import EditorBar from './components/wangEnduit'
 export default {
   components: {
-    Pagination
+    Pagination,
+    EditorBar
   },
   data() {
     return {
+      isClear: false, 
       status: "",
       dialogTitle: "查看",
-      newlyList: {},
+      newlyList: {
+        status: 1
+      },
+      editorOption: {},
       itemObj: {},
       itemList: {},
       itemArr: [],
@@ -434,10 +450,16 @@ export default {
   created() {
     this.getData()
   },
+  mounted(){
+    
+  },
   methods: {
     forceUpdate(){
-        this.$forceUpdate
+        this.$forceUpdate()
     },
+    change(val) {  
+        console.log(val)  
+    },  
     compile(item){
       var list = this.seatLevel.filter(v=>{
           if(v.seatLevel === "price_yz"){
@@ -463,6 +485,8 @@ export default {
       })
       this.newlyList.fromStation = item.fromStation
       this.newlyList.toStation = item.toStation
+      this.newlyList.status = item.status
+      this.newlyList.introduce = item.introduce
       this.seatLevel = list
       this.dialogTitle = "编辑"
       this.newlyDialog = true
@@ -501,6 +525,8 @@ export default {
                 })
                 data.ttStationLinePriceList = list
                 data.remark = this.newlyList.remark
+                data.status = this.newlyList.status
+                data.introduce = this.newlyList.introduce
                 addStationLine(data).then(res=>{
                     if(res.code == 200){
                         this.confirmLoading = false
@@ -550,6 +576,9 @@ export default {
         this.dialogTitle = "新增"
         this.newlyDialog = true
         this.fromTodisabled = false
+        this.newlyList = {
+          status: 1
+        }
     },
     handleSelectionChange(val) {
         this.itemArr = val
