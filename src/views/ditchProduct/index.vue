@@ -789,12 +789,15 @@ export default {
           });          
         });
     },
+    trim(s){
+        return s.replace(/(^\s*)|(\s*$)/g, "");
+    },
     getData(filter){
       this.loading = true
       let data = {}
       var queryList = this.queryList
       if (queryList.name) {
-        data.name = queryList.name
+        data.name = this.trim(queryList.name) 
       }
       if(!(queryList.isPay == null)){
         data.isPay = queryList.isPay

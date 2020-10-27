@@ -2,10 +2,10 @@
   <div class="ticketService">
       <div class="form_box">
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="200px" class="demo-ruleForm">
-            <el-form-item label="出发日期" prop="bookingDate">
-                <!-- @change="changedates" -->
+            <!-- <el-form-item label="出发日期" prop="bookingDate">
+                 @change="changedates" 
                  <el-date-picker type="date" :picker-options="pickerOptions" value-format="yyyy-MM-dd" @change="forcedata" placeholder="请选择出发日期" v-model="ruleForm.bookingDate" style="width: 400px;"></el-date-picker>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="去程出发站" prop="fromStation">
                 <el-select v-model="ruleForm.fromStation" placeholder="请选择或输入去程出发站" filterable clearable style="width: 400px;" @change="forcedata">
                     <el-option :label="value.fromStation" :value="value.fromStation" v-for="(value,index) in ttList" :key="index"></el-option>
@@ -48,6 +48,16 @@
                     :value="item.to_station">
                     </el-option>
                 </el-select> -->
+            </el-form-item>
+            <el-form-item label="出发日期" prop="bookingDate">
+                <el-select v-model="ruleForm.bookingDate" clearable placeholder="请选择出发日期" style="width: 400px;" @change="getSeatLeavelPrice">
+                    <el-option
+                        v-for="item in ticketDateList"
+                        :key="item.ticketDate"
+                        :label="item.ticketDate"
+                        :value="item.ticketDate">
+                    </el-option>
+                </el-select>
             </el-form-item>
             <!-- <el-form-item label="去程优先乘车时间段" prop="bookingTime">  -->
                 <!-- required -->
@@ -204,7 +214,7 @@
 
 <script>
 import formatTime from "@/utils/formatTime"
-import { getTTStation, preAddTTPassenger, addTTPassenger, getAvailableTime, getSeatLeavelPriceByIdAndEid, getTTStationByNotInId, getFromOrToStation , getFromStationList , getToStationList , getSeatLevelByStation } from "@/api/ticket/ticketService"
+import { getTTStation, preAddTTPassenger, addTTPassenger, getAvailableTime, getSeatLeavelPriceByIdAndEid, getTTStationByNotInId, getFromOrToStation , getFromStationList , getToStationList , getSeatLevelByStation , selectTicketDate } from "@/api/ticket/ticketService"
 export default {
     data(){
         const that = this
@@ -212,6 +222,7 @@ export default {
             fromLoading: false,
             stationList: [],
             stationList2: [],
+            ticketDateList: [],
             pickerOptions: {
                 disabledDate(time) {
                     // var a = formatTime(time.getTime(),'yyyy-mm-dd')
@@ -230,6 +241,8 @@ export default {
             ruleForm: {
                 // needQuick: 0,
                 // needWaiting: 0,
+                seatLevel: "",
+                bookingDate: "",
                 needBack: 0,
                 ttPassengerList: [
                     {
@@ -539,29 +552,43 @@ export default {
         this.$refs[formName].resetFields();
       },
       getSeatLeavelPrice(){
-          if(!this.ruleForm.bookingDate){
-              this.$message("请选择出发日期!")
-              return
+          if(this.ruleForm.bookingDate){
+              getSeatLevelByStation({
+                    fromStation: this.ruleForm.fromStation,
+                    toStation: this.ruleForm.toStation,
+                    ticketDate: this.ruleForm.bookingDate
+                }).then(res=>{
+                    if(res.code == 200 && res.data){
+                        this.seatList = res.data
+                        if(res.data.length <= 0){
+                            this.$message("该日期暂无坐席票数开放，请修改出发日期或更换出发、到达站点")
+                        }
+                    }else{
+                        this.$message(res.msg)
+                    }
+                    this.ruleForm.seatLevel = ""
+                    this.$forceUpdate()
+                })
           }
-          getSeatLevelByStation({
-              fromStation: this.ruleForm.fromStation,
-              toStation: this.ruleForm.toStation,
-              ticketDate: this.ruleForm.bookingDate
-          }).then(res=>{
-              if(res.code == 200 && res.data){
-                  this.seatList = res.data
-                  if(res.data.length <= 0){
-                      this.$message("该日期暂无坐席票数开放，请修改出发日期或更换出发、到达站点")
-                  }
-              }else{
-                  this.$message(res.msg)
-              }
-          })
+      },
+      getDateList(){
+        selectTicketDate({
+            fromStation: this.ruleForm.fromStation,
+            toStation: this.ruleForm.toStation
+        }).then(res=>{
+            if(res.code ==200){
+                this.ticketDateList = res.data
+            }
+            if(res.data && res.data.length <= 0){
+                this.$message("该线路无开放出发日期！")
+            }
+            this.ruleForm.bookingDate = ""
+        })
       },
       forcedata(){
           this.$forceUpdate()
           if(this.ruleForm.toStation && this.ruleForm.fromStation){
-             this.getSeatLeavelPrice() 
+             this.getDateList()
           }
       }
     }

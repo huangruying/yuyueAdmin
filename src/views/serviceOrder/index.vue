@@ -201,6 +201,10 @@ export default {
     this.getData()
   },
   methods: {
+    //去左右空格;
+    trim(s){
+        return s.replace(/(^\s*)|(\s*$)/g, "");
+    },
     exportData(){
       if(this.data.data.length <= 0){
         this.$message({
@@ -266,13 +270,13 @@ export default {
       let data = {}
       var queryList = this.queryList
       if (queryList.ytorderno) {
-        data.ytorderno = queryList.ytorderno
+        data.ytorderno = this.trim(queryList.ytorderno) 
       }
       if (queryList.cardno) {
-        data.cardno = queryList.cardno
+        data.cardno = this.trim(queryList.cardno) 
       }
       if (queryList.orderno) {
-        data.orderno = queryList.orderno
+        data.orderno = this.trim(queryList.orderno)  
       }
       if(!(queryList.usetypeid == null)){
         data.usetypeid = queryList.usetypeid

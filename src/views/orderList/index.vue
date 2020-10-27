@@ -49,7 +49,7 @@
               </el-select>
           </div>
        </div>
-      <!-- <div style="padding-top: 25px;"><el-divider content-position="left"><span class="title">导出筛选</span></el-divider></div> -->
+      <div style="padding-top: 25px;"><el-divider content-position="left"><span class="title">导出筛选</span></el-divider></div>
       <div class="query">
         <div class="input_box clearFix">
           <div>
@@ -89,15 +89,11 @@
       </div> 
        <div class="btn_box">
          <div>
-
-           <!-- <el-button type="primary" @click="alterStatus">修改订单状态</el-button> -->
-           <el-button type="danger" @click="reimburse(2)">批量退款</el-button>
            <el-button type="primary" icon="el-icon-search" @click="getData">搜索</el-button>
            <el-button type="primary" icon="el-icon-refresh-right" @click="reset">重置</el-button>
          </div>
          <div>
-           <!-- <el-button type="primary" icon="el-icon-download" @click="exportForm">导出</el-button> -->
-           <el-button type="primary" icon="el-icon-upload2" @click="toLead">导入</el-button>
+           <el-button type="primary" icon="el-icon-download" @click="exportForm">导出</el-button>
            <el-button type="primary" icon="el-icon-refresh" @click="resetGetData"></el-button>
          </div>
        </div>
@@ -142,31 +138,11 @@
           <span>{{ scope.row.to_station }}</span>
         </template>
       </el-table-column>
-      <!-- <el-table-column label="去程车次" prop="code" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.code }}</span>
-        </template> 
-      </el-table-column>
-      <el-table-column label="返程车次" prop="dack_code" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.dack_code }}</span>
-        </template> 
-      </el-table-column> -->
       <el-table-column label="座席" prop="seat_levelCopy" align="center" width="90px">
         <template slot-scope="scope">
           <span>{{ scope.row.seat_levelCopy }}</span>
         </template>
       </el-table-column>
-      <!-- <el-table-column label="专用安检通道" prop="need_quick" align="center" width="110px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.need_quick }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="候车定制" prop="need_waiting" align="center" width="100px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.need_waiting }}</span>
-        </template>
-      </el-table-column> -->
       <el-table-column label="联系人" prop="user_id" align="center" width="120px">
         <template slot-scope="scope">
           <span>{{ scope.row.user_id }}</span>
@@ -187,11 +163,6 @@
           <span>{{ scope.row.realPrice }}</span>
         </template>
       </el-table-column>
-      <!-- <el-table-column label="订单类别" prop="need_back" align="center" width="100px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.need_back }}</span>
-        </template>
-      </el-table-column> -->
       <el-table-column label="订单状态" prop="status" align="center" width="140px">
         <template slot-scope="scope">
           <span>{{ scope.row.status }}</span>
@@ -199,7 +170,6 @@
       </el-table-column>
       <el-table-column label="操作" width="180" fixed="right" prop="audit_status" align="center">
         <template slot-scope="scope">
-          <el-button size="mini" type="danger" @click="reimburse(scope.row)" v-if="!(scope.row.status === '已退款')">退款</el-button>
           <el-button size="mini" type="primary" @click="lookData(scope.row)">查看</el-button>
         </template>
       </el-table-column>  
@@ -291,40 +261,6 @@
         </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="editDialog = false">返 回</el-button>
-      </span>
-    </el-dialog>
-    <!-- 修改状态 -->
-    <el-dialog
-      title="修改状态"
-      :visible.sync="dialogStatus"
-      width="30%">
-      <div class="status">
-        <span>订单状态:</span>
-        <el-select v-model="status" placeholder="请选择订单状态">
-              <el-option
-              v-for="item in statusList"
-              :label="item.value"
-              :value="item.id"
-              :key="item.id"
-              ></el-option>
-        </el-select>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogStatus = false">取 消</el-button>
-        <el-button type="primary" @click="confirmStatus">确 定</el-button>
-      </span>
-    </el-dialog>
-    <!--上传文件的弹窗-->
-    <el-dialog :visible.sync="uploaddialogVisible" :close-on-click-modal="false" title="导入数据" center>
-      <el-upload ref="upload" :auto-upload="false" :multiple="false" :on-change="handleChange" :on-remove="removeFile"
-        :limit="1" action="" drag class="upload-demo">
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div slot="tip" class="el-upload__tip">只能上传excel文件</div>
-      </el-upload>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="uploaddialogVisible = false">返 回</el-button>
-        <el-button type="primary" @click="submitImportExcel">确 定</el-button>
       </span>
     </el-dialog>
   </div>

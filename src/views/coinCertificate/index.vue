@@ -293,6 +293,14 @@
               :key="item.id"
             ></el-option>
           </el-select>
+          <el-select v-model="dialogList.channelId" @change="look(obj)" class="input fl" placeholder="请选择渠道">
+            <el-option
+              v-for="item in channelList"
+              :label="item.name"
+              :value="item.id"
+              :key="item.id"
+            ></el-option>
+          </el-select>
           <!-- <el-date-picker
             class="input fl"
             style="width:360px"
@@ -342,12 +350,17 @@
               <span>{{ scope.row.code }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="领劵人" prop="name" align="center">
+          <el-table-column label="渠道" prop="channelName" align="center">
+            <template slot-scope="scope">
+              <span>{{ scope.row.channelName }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="使用人" prop="name" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.name }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="领劵人手机号" prop="mobile" align="center">
+          <el-table-column label="使用人手机号" prop="mobile" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.mobile }}</span>
             </template>
@@ -486,7 +499,8 @@ export default {
       dialogList: {
         code: null,
         status: null,
-        mobile: null
+        mobile: null,
+        channelId: null
         // time: ["", ""] 
       },
       itemObj: {
@@ -614,6 +628,7 @@ export default {
     //   }
     },
     lookData(data){
+      this.apiList4Select()
       this.dialogList = {
         code: null,
         mobile: null,
@@ -651,6 +666,9 @@ export default {
       }
       if(!(this.dialogList.status == null)){
         data.status = this.dialogList.status
+      }
+      if(!(this.dialogList.channelId == null)){
+        data.channelId = this.dialogList.channelId
       }
     //   if(this.dialogList.time && this.dialogList.time[0] && this.dialogList.time[1]) {
     //     data.startTime = this.dialogList.time[0]
@@ -1046,6 +1064,12 @@ export default {
       this.expire = ""
     },
     close2(){
+      this.dialogList = {
+        code: null,
+        status: null,
+        mobile: null,
+        channelId: null
+      }
     },
     closeVis(){
       this.dynamicValidateForm = {}

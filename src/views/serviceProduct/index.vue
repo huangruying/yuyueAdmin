@@ -321,6 +321,10 @@ export default {
     audit(item){
       this.open2('确定审核通过？' , item.id)
     },
+    //去左右空格;
+    trim(s){
+        return s.replace(/(^\s*)|(\s*$)/g, "");
+    },
     open2(text,id) {
         this.$confirm(text, '提示', {
           confirmButtonText: '确定',
@@ -468,10 +472,10 @@ export default {
       let data = {}
       var queryList = this.queryList
       if (queryList.name) {
-        data.name = queryList.name
+        data.name = this.trim(queryList.name) 
       }
       if(!(queryList.otherName == null)){
-        data.otherName = queryList.otherName
+        data.otherName = this.trim(queryList.otherName) 
       }
       if(!(queryList.usetypeid == null)){
         data.usetypeid = queryList.usetypeid

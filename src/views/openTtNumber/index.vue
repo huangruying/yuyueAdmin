@@ -6,30 +6,44 @@
        <div class="input_box clearFix">
           <div>
             <span>出发站名称:</span>
-            <el-input
-            v-model="queryList.fromStation"
-            placeholder="请输入出发站名称"
-            class="input"
-            @keyup.enter.native="handleFilter" />
+            <el-select v-model="queryList.fromStation" class="input" placeholder="请选择出发站" @change="handleFilter">
+              <el-option
+                v-for="item in fromStationList"
+                :key="item.fromStation"
+                :label="item.fromStation"
+                :value="item.fromStation">
+              </el-option>
+            </el-select>
           </div>
           <div>
             <span>到达站名称:</span>
-            <el-input
-            v-model="queryList.toStation"
-            placeholder="请输入到达站名称"
-            class="input"
-            @keyup.enter.native="handleFilter" />
+            <el-select v-model="queryList.toStation" class="input" placeholder="请选择到达站" @change="handleFilter">
+              <el-option
+                v-for="item in toStationList"
+                :key="item.toStation"
+                :label="item.toStation"
+                :value="item.toStation">
+              </el-option>
+            </el-select>
           </div>
           <div>
               <span>日期:</span>
-              <el-date-picker
+              <el-select v-model="queryList.ticketDate" class="input" placeholder="请选择出发日期" style="width: 400px;" @change="getData">
+                <el-option
+                  v-for="item in ticketDateList"
+                  :key="item.ticketDate"
+                  :label="item.ticketDate"
+                  :value="item.ticketDate">
+                </el-option>
+              </el-select>
+              <!-- <el-date-picker
                   class="input"
                   v-model="queryList.ticketDate"
                   @change="handleFilter"
                   value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="请选择日期">
-              </el-date-picker>
+              </el-date-picker> -->
           </div>
        </div> 
        <div class="btn_box">
@@ -55,6 +69,11 @@
       style="width: 100%;">
       <el-table-column align="center" type="selection" width="50"></el-table-column>
       <el-table-column width="70" label="序号" type="index" align="center"></el-table-column>
+      <el-table-column label="状态" prop="status" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.status == 1?'正常':'禁用' }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="出发站" prop="fromStation" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.fromStation }}</span>
@@ -65,7 +84,7 @@
           <span>{{ scope.row.toStation }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="坐席" prop="seatLevelName" align="center">
+      <el-table-column label="座席" prop="seatLevelName" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.seatLevelName }}</span>
         </template>
@@ -83,7 +102,7 @@
       <el-table-column label="剩余票数量" prop="available" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.available }}</span>
-        </template>
+        </template> 
       </el-table-column>
       <el-table-column label="操作" width="200" fixed="right" prop="audit_status" align="center">
         <template slot-scope="scope">
@@ -191,7 +210,7 @@
 </template>
 
 <script>
-import { getTTStationLineTicketsList, getTTStationLineTicketByStation, addOrUpdateTTStationLineTicketByStation, batchTTStationLineTicketByStation , getByStation , getBySeatLevel , addTTStationLineTicketByStation , deleteByStation } from "@/api/ticket/openTtNumber"
+import { getTTStationLineTicketsList, getTTStationLineTicketByStation, addOrUpdateTTStationLineTicketByStation, batchTTStationLineTicketByStation , getByStation , getBySeatLevel , addTTStationLineTicketByStation , deleteByStation , getToStationNewList , getFromStationList , selectTicketDate } from "@/api/ticket/openTtNumber"
 import Pagination from "@/components/Pagination"
 export default {
     components: {
@@ -221,6 +240,7 @@ export default {
             total: 0,
             link: ""
           },
+          ticketDateList: [],
           loading: false,
           confirmLoading: false,
           newlyDialog: false,
@@ -235,9 +255,12 @@ export default {
               number: "",
               time: ""
           },
+          ticketDateList: [],
           stationList: [],
           stationList2: [],
           seatLevel: [],
+          fromStationList: [],
+          toStationList: [],
           queryList: {
               toStation: null,
               fromStation: null,
@@ -248,11 +271,27 @@ export default {
     },
     created() {
         this.getData()
+        this.getFromStationList()
+        this.getToStationList()
     },
     mounted(){
 
     },
     methods: {
+      getFromStationList(){
+        getFromStationList().then(res=>{
+          if(res.code == 200){
+            this.fromStationList = res.data
+          }
+        })
+      },
+      getToStationList(){
+        getToStationNewList().then(res=>{
+          if(res.code == 200){
+            this.toStationList = res.data
+          }
+        })
+      },
         handleSelectionChange(val) {
           this.itemArr = val
         },
@@ -487,6 +526,16 @@ export default {
         },
         handleFilter(){
             this.getData()
+            if(this.queryList.toStation && this.queryList.fromStation){
+              selectTicketDate({
+                  fromStation: this.queryList.fromStation,
+                  toStation: this.queryList.toStation
+              }).then(res=>{
+                  if(res.code ==200){
+                      this.ticketDateList = res.data
+                  }
+              })
+            }
         },
         getPageData(e) {
             this.getData("page");

@@ -407,6 +407,9 @@ export default {
     itemCityList(){
       this.$forceUpdate()
     },
+    trim(s){
+        return s.replace(/(^\s*)|(\s*$)/g, "");
+    },
     newlyDivider(){
       this.innerVisible = true
       this.lobbyObj = {}
@@ -761,13 +764,13 @@ export default {
       let data = {}
       var queryList = this.queryList
       if (queryList.stationName) {
-        data.stationName = queryList.stationName
+        data.stationName = this.trim(queryList.stationName) 
       }
        if (queryList.stationCode) {
-        data.stationCode = queryList.stationCode
+        data.stationCode = this.trim(queryList.stationCode) 
       }
       if (queryList.province) {
-        data.province = queryList.province
+        data.province = this.trim(queryList.province) 
       }
       // if (queryList.city) {
       //   data.city = queryList.city

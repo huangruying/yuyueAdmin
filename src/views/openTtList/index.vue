@@ -458,7 +458,7 @@ export default {
         this.$forceUpdate()
     },
     change(val) {  
-        console.log(val)  
+        // console.log(val)  
     },  
     compile(item){
       var list = this.seatLevel.filter(v=>{
@@ -536,6 +536,7 @@ export default {
                             message: '操作成功!'
                         });
                         this.getData()
+                        this.$refs[formName].resetFields();
                     }else{
                         this.confirmLoading = false
                         this.$message({
@@ -628,7 +629,53 @@ export default {
       this.itemList = item
     },
     closeNewly(){
-
+      this.seatLevel = [
+          {
+              price: '0',
+              seatLevel: 'price_yz',
+              name: '硬座'
+          },
+          {
+              price: '0',
+              seatLevel: 'price_rz',
+              name: '软座'
+          },
+          {
+              price: '0',
+              seatLevel: 'price_yw',
+              name: '硬卧'
+          },
+          {
+              price: '0',
+              seatLevel: 'price_dw',
+              name: '动卧'
+          },
+          {
+              price: '0',
+              seatLevel: 'price_rw',
+              name: '软卧'
+          },
+          {
+              price: '0',
+              seatLevel: 'price_ed',
+              name: '二等座'
+          },
+          {
+              price: '0',
+              seatLevel: 'price_yd',
+              name: '一等座'
+          },
+          {
+              price: '0',
+              seatLevel: 'price_td',
+              name: '特等'
+          },
+          {
+              price: '0',
+              seatLevel: 'price_sw',
+              name: '商务'
+          }
+      ]
     },
     close(){
       this.itemList = {}

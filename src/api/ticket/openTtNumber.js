@@ -63,3 +63,27 @@ export function getTTStationLineTicketsList(data) {
       data: data
     })
   }
+
+  export function getFromStationList(data) {
+    return request({
+      url: '/tt/getFromStationList',
+      method: 'post',
+      data: data
+    })
+  }
+
+  export function getToStationNewList(data) {
+    return request({
+      url: '/tt/getToStationNewList',
+      method: 'post',
+      data: data
+    })
+  }
+
+  export function selectTicketDate(data) {
+    return request({
+      url: '/tt/selectTicketDate',
+      method: 'post',
+      data: data
+    })
+  }

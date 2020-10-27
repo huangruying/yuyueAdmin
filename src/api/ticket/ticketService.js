@@ -79,3 +79,11 @@ export function getSeatLevelByStation(data) {
     data: data
   })
 }
+
+export function selectTicketDate(data) {
+  return request({
+    url: '/tt/selectTicketDate',
+    method: 'post',
+    data: data
+  })
+}
